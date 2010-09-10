@@ -1,0 +1,126 @@
+%%%%
+%% This file is part of gCoke [ http://www.gcoke.org ]
+%%
+%% Copyright (C) 2010-  Sebastien Mosser
+%%
+%% gCoke is free software; you can redistribute it and/or modify
+%% it under the terms of the GNU Lesser General Public License as 
+%% published by the Free Software Foundation; either version 2 of 
+%% the License, or (at your option) any later version.
+%%
+%% gCoke is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU Lesser General Public License for more details.
+%%
+%% You should have received a copy of the GNU Lesser General Public 
+%% License along with gCoke; if not, write to the Free Software Foundation,
+%% Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+%%
+%% @author   Main    Sebastien Mosser  [mosser@polytech.unice.fr]
+%%%%
+
+
+%%%%
+%% Message Handling
+%%%%
+
+%% Should the engine be silent? (false by default)
+:- dynamic gcoke_silence/1.
+gcoke_silence(false).
+
+%% set_gcoke_silence/1: set_gcoke_silence(+Value)
+% Assign Value (a boolean) to the gcoke silence level
+set_gcoke_silence(Value) :- 
+	retractall(gcoke_silence(_)), assert(gcoke_silence(Value)).
+
+%% gw/1 : gw(+Str)
+% means gcoke_write. Write Str if gcoke_silence is set to false.
+gw(Str) :- 
+	gcoke_silence(false) -> (write(Str),nl); true.
+
+%% gwf/2: gwf(+Format, +Args)
+% like gw/1, but use writef instead of write.
+gwf(Format, Args) :- 
+	gcoke_silence(false) -> writef(Format, Args) ; true.
+
+%%%%
+%% Artefact load mechanisms
+%%%%
+
+%% load_pops/1: load_pops(+Path)
+% Load Path, as a Plain Old Prolog Source (POPS) file.
+load_pops(Path) :-
+	set_prolog_flag(verbose_load, false),
+	gwf('%% Loading gCoke source file  [%w] ...\n', [Path]), [Path].
+
+%% load_source/1: load_source(+Path)
+% load the gcoke module written in the file Path.
+load_module(Path) :- 
+	gwf('%% Loading gCoke module file  [%w] ...\n', [Path]),
+        use_module(Path).
+
+%% load_lib/1: load_lib(+Lib)
+% load a swi-pl third party library, avoiding autoload. 
+% /!\ Remark: use the 'check.' rule to identify autoloaded libraries
+load_lib(Lib) :- 
+	gwf('%% Loading third-part library [%w] ...\n', [Lib]),
+	use_module(library(Lib)).
+
+%%%%
+%% Pretty printed header informations
+%%%%
+
+%% header/0: header
+% Print header informations, according to adore_silence setting.
+header :- 
+	gw('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'),
+        gw('%%           gCoke Copyright (C) 2010 - ...          %%'),
+        gw('%%          Graph-based COmposition KErnel           %%'),
+        gw('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'),
+        gw('%%  Author:  Sebastien Mosser < sm@gcoke.org >       %%'),
+        gw('%%  Website: http://www.gcoke.org                    %%'),
+        gw('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'),
+        gw('%%  This program comes with ABSOLUTELY NO WARRANTY.  %%'),
+        gw('%%  This is free software, and you are welcome to    %%'),
+        gw('%%  redistribute it under certain conditions.        %%'),
+        gw('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%').
+   
+%%%%
+%% Concrete instantiation of the gCoke engine
+%%%%
+
+%% load_librairies/0: load_libraries
+% load all the needed swi-pl libraries
+load_libraries :- 
+	load_lib(error), load_lib(lists), load_lib(debug).
+
+%% load_core/0: load_core
+% load gCoke core, as modules or plain old prolog source code
+load_core :-  
+	load_pops(helpers), load_module('channels'), load_pops(sniffs), 
+	load_module('graph'), load_module('queries'), 
+	load_module('constraints'), load_module('engine'), 
+	load_module('actions'), load_module('dot'),
+	true.
+    
+
+%% load_local_config/0: load_local_config
+% load a local config file (~/.gcoke.pl), if exists.
+load_local_config :- 
+	getenv('HOME',Home), swritef(F,'%w/.gcoke.pl',[Home]), 
+        ( exists_file(F) 
+          -> (gw('%% Loading user\'s config file [~/.gcoke.pl] ...'),[F])
+          ; true).
+
+%%%%
+%% Loading the complete gCoke engine
+%%%%
+
+%% load_gcoke/0: load_gcoke
+% Load the librairies, THEN the gcoke sources, and FINALLY the local config.
+load_gcoke :- 
+	set_prolog_flag(verbose_load, false),
+	header, load_libraries, load_core, load_local_config.
+
+:- load_gcoke.
