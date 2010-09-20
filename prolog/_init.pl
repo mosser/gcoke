@@ -93,7 +93,7 @@ header :-
 %% load_librairies/0: load_libraries
 % load all the needed swi-pl libraries
 load_libraries :- 
-	load_lib(error), load_lib(lists), load_lib(debug).
+	load_lib(error), load_lib(lists), load_lib(debug), load_lib(gensym).
 
 %% load_core/0: load_core
 % load gCoke core, as modules or plain old prolog source code

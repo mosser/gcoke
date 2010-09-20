@@ -62,27 +62,24 @@ single_props(Automata, Action) :-
 %% Domain Specific Visualization
 %%%%
 
-graph_config(Config_list) :- 
-        Config_list = ['fontname = Courier', 
-	               'node [fontname="Courier"]', 
-                       'edge [fontname="Courier"]'].
-
-node_handler(_, Node, _, Params) :- 
-	graph:read_properties(Node,kind,[start]), graph:read_name(Node,Name),
-	Params = [[fillcolor, lightgrey], [style, filled], [label, Name]].
-node_handler(_, Node, _, Params) :- 
-	graph:read_properties(Node,kind,[final]), graph:read_name(Node,Name),
-	Params = [[shape, doublecircle], [label, Name]].
-node_handler(_, Node, _, Params) :- 
-	graph:read_properties(Node,kind,[normal]), graph:read_name(Node,Name),
-	Params = [[label, Name]].
-
+graph_config(L) :- 
+        L = ['fontname = Courier', 'node [fontname="Courier"]', 
+	     'edge [fontname="Courier"]'].
+node_handler(_, Node, _, Params) :-
+	graph:read_name(Node,Name), graph:read_properties(Node, kind, [K]),
+ 	( K = start -> O = [[fillcolor, lightgrey], [style, filled]] 
+           ; K = final -> O = [[shape, doublecircle]] ; O = []),
+	append([[label, Name]], O, Params).
 edge_handler(_, Edge, [[label, Label]]) :- 
-	graph:read_properties(Edge, symbol, Symbols),
-	swrite_list(Symbols, ', ', '', Label).
+	graph:read_properties(Edge, symbol, Symbols), 
+	swrite_list(Symbols, ',', '', Label).
+
+dot_builder(B) :- 
+	B = [[graph_config, automata:graph_config],
+	     [node_handler, automata:node_handler],
+	     [edge_handler, automata:edge_handler]].
 
 draw(Automata, Format, File) :- 
-	dot:draw(Automata, [[graph_config, 'automata:graph_config'],
-	                    [node_handler, 'automata:node_handler'],
-			    [edge_handler, 'automata:edge_handler']], 
-		 Format, File).
+	dot_builder(B), dot:draw(Automata, B, Format, File).
+show(Automata) :- 
+	dot_builder(B), dot:show(Automata, B).
