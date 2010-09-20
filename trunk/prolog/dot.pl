@@ -36,6 +36,9 @@
 %%
 %% Remark: The code assume the 'dot' executable to be in the PATH. One can use
 %%   a GCOKE_DOT shell environment variable to set an absolute path.
+%%   It also assumes a picture visualizer, named 'open' (Mac OS X swiss-knife
+%%   command). the GCOKE_OPEN shell variable can be set to oveeride this 
+%%   default value.
 %%%%
 
 %%%%
@@ -142,6 +145,17 @@ default_cluster_handler(_,_,_,_).
 %%    See [http://www.graphviz.org/doc/info/output.html] for a list of output
 %%    format supported by Graphviz
 %%%%
+
+
+%% show/2: show(+Graph, +Builder)
+% Tranform Graph into a PNG picture, and open a picture visualizer tool.
+
+show(Graph, Builder) :- 
+	tmp_file('gcoke_to_dot_to_png',Tmp), draw(Graph, Builder, png, Tmp), 
+	getenv_or_default('GCOKE_OPEN','open',E),
+        swritef(Cmd,'%w %w.png', [E, Tmp]), 
+        channels:push(dot(shell),Cmd,[]),
+        shell(Cmd).
 
 %% draw/4: draw(+Graph, +Builder, +Format, +F)
 %  The file F.Format (e.g., F='foo', Format='png' ~> 'foo.png') will contains
