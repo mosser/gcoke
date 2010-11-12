@@ -21,4 +21,15 @@
 ## @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
 ####
 
-swipl -s $GCOKE_HOME/prolog/_init.pl -g true
+COMPILER=gckc.sh
+
+## gcoke.sh INPUT_FILE "goal_name"
+
+function main() {
+    TMP=`mktemp -t gcoke.sh.XXXXXX`
+    trap "rm $TMP* 2>/dev/null" EXIT
+    $COMPILER -in $1 -out $TMP
+    swipl -s $GCOKE_HOME/prolog/_init.pl -g "['$TMP'],$2"
+}
+
+main $@

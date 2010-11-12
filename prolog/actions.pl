@@ -64,7 +64,6 @@ del_edge(Source_name, Target_name, Key_value_list, Graph, Result) :-
 	                             Target_name, Edge), !, %% => is det.
 	graph:pull_edge(Graph, Edge, Result).
 
-
 %%%%
 %% Composite Action: replace
 %%%%

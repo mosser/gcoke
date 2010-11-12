@@ -1,0 +1,13 @@
+
+graph test {
+  node_1 [foo='bar'];
+  node_2 [foo='bar',geek='true'];
+  node_1 -> node_2 [bar='geek'];
+  node_2 -> node_2;
+}
+
+/*
+pool <name> (g1,...,gN) {
+  merge (a: g1, b: g2) => (res: g12);
+  
+} */
