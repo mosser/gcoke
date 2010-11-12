@@ -101,7 +101,8 @@ load_core :-
 	load_pops(helpers), load_module(channels), load_pops(sniffs), 
 	load_module(graph), load_module(queries), 
 	load_module(constraints), load_module(engine), 
-	load_module(actions), load_module(dot), load_module(trace),
+	load_module(actions), load_module(dot), load_module(trace), 
+	load_module(algorithm),
 	true.
     
 

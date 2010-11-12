@@ -1,0 +1,10 @@
+*~
+.*~
+gcoke_compiler.jar
+*.class
+output
+org
+*.tokens
+*Parser.java
+*Lexer.java
+*Eval.java

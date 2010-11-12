@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 ####
 ## This file is part of gCoKe [ http://www.gcoke.org ]
 ##
@@ -21,4 +21,10 @@
 ## @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
 ####
 
-swipl -s $GCOKE_HOME/prolog/_init.pl -g true
+COMPILER=$GCOKE_HOME/java/compiler/gcoke_compiler.jar
+
+## do not edit after this line ##
+java -jar $COMPILER $@
+
+
+

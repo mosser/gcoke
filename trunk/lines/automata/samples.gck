@@ -1,0 +1,15 @@
+/** Automata samples
+ * @author: Sebastien Mosser
+ **/
+
+// "Sniffing" the automata specialization
+sniff automata;
+
+// Describing a Moore automaton
+graph a [family='moore'] {
+  // Declared nodes
+  s1 [kind='start']; s2; s3 [kind='final'];
+  // Available transitions
+  s1 -> s2 [letter='0'];
+  s2 -> s3 [letter='1', letter='0'];
+}

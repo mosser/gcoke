@@ -1,0 +1,70 @@
+/**
+ * This file is part of gCoKe [ http://www.gcoke.org ]
+ *
+ * Copyright (C) 2010-  Sebastien Mosser
+ *
+ * gCoKe is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation; either version 2 of 
+ * the License, or (at your option) any later version.
+ *
+ * gCoKe is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with gCoKe; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
+ **/
+ 
+group gck2pl; // Transform gcoke abstract syntax into prolog
+ 
+// Global source template (root)
+source(artefacts) ::= <<
+%%%%
+%% gCoke Compiler Output (gck2pl: .gck -> .pl)
+%%%%
+
+<artefacts; separator="\n\n">
+
+%% End of generated code
+>>
+
+// handling raw loading (should be prolog-specific by the way)
+raw(file_name) ::= ":- load_pops(<file_name>)."
+
+// halding sniffs
+sniff(line_name) ::= ":- gcoke_sniff(<line_name>)."
+
+// handling graphs
+graph(id, nodes, edges, props) ::= <<
+%% Graph <id> (Builder)
+build_compiled_graph(<id>, Graph, Counter) :-
+  graph:build_graph(<id>, Empty),
+  Props_Acts = [<props>],
+  Nodes_Acts = [<nodes>],
+  Edges_Acts = [<edges>],
+  flatten([Props_Acts, Nodes_Acts, Edges_Acts], Actions),
+  engine:do_sequence(Empty, Actions, Graph, Counter).
+:- build_compiled_graph(<id>, G, _), graph:push_into_db(G).
+>>
+
+// handling graph properties
+graph_prop_lst(props) ::= "<props; separator=\", \">"
+graph_prop(key, value) ::= "actions:add_property(<key>,<value>)"
+
+//handling node
+node_lst(nodes) ::= "<nodes; separator=\", \">"
+node(id, props) ::= "actions:add_node(<id>, [<props>])"
+
+// handling edges
+edge_lst(edges) ::= "<edges; separator=\", \">"
+edge(left, right, props) ::= 
+	"actions:add_edge(<left>, <right>, [<props>])"
+
+// handling properties for nodes and edges
+prop_lst(props) ::= "<props; separator=\", \">"
+prop(key, value) ::= "[<key>, <value>]"
