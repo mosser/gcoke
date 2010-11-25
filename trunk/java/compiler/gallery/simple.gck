@@ -1,0 +1,22 @@
+/**
+ * A simple gck file, to illustrate daily usage of the gck syntax
+ * @author Sebastien Mosser <sm@gcoke.org>
+ */
+
+// Compilation: gckc.sh -in simple.gck
+
+// A graph is composed by 'nodes' and 'edges'
+graph small {
+  // first comes 'nodes'
+  node_1; node_2;
+  //and then 'edges'
+  node_1 -> node_2;
+}
+
+// A graph element (i.e., node, edge and graph itself) can hold properties
+graph with_props[kind='directed'] {
+  node_1 [aProp='aValue', anotherProp='anotherValue'];
+  node_2; // <== with no properties;
+  node_1 -> node_2 [anEdgeProperty='a value with spaces'];
+}
+

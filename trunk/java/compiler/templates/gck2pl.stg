@@ -25,8 +25,11 @@ group gck2pl; // Transform gcoke abstract syntax into prolog
 // Global source template (root)
 source(artefacts) ::= <<
 %%%%
-%% gCoke Compiler Output (gck2pl: .gck -> .pl)
+%% gckc output (gck2pl template: .gck -> .pl)
 %%%%
+
+:- discontiguous build_compiled_graph/3.
+:- discontiguous build_compiled_composition/2.
 
 <artefacts; separator="\n\n">
 
@@ -34,10 +37,20 @@ source(artefacts) ::= <<
 >>
 
 // handling raw loading (should be prolog-specific by the way)
-raw(file_name) ::= ":- load_pops(<file_name>)."
+raw(file_name) 		::= ":- load_pops(<file_name>)."
 
 // halding sniffs
-sniff(line_name) ::= ":- gcoke_sniff(<line_name>)."
+sniff(line_name) 	::= ":- gcoke_sniff(<line_name>)."
+
+// Handling required files
+require(file_name, artefacts) ::= <<
+
+%% Required content (from <file_name>)
+
+<artefacts; separator="\n\n">
+
+%% End of required content (from <file_name>)
+>>
 
 // handling graphs
 graph(id, nodes, edges, props) ::= <<
@@ -48,23 +61,55 @@ build_compiled_graph(<id>, Graph, Counter) :-
   Nodes_Acts = [<nodes>],
   Edges_Acts = [<edges>],
   flatten([Props_Acts, Nodes_Acts, Edges_Acts], Actions),
-  engine:do_sequence(Empty, Actions, Graph, Counter).
+  engine:do_sequence(Empty, Actions, Graph, Counter),!.
 :- build_compiled_graph(<id>, G, _), graph:push_into_db(G).
 >>
 
 // handling graph properties
-graph_prop_lst(props) ::= "<props; separator=\", \">"
-graph_prop(key, value) ::= "actions:add_property(<key>,<value>)"
+graph_prop_lst(props) 	::= "<props; separator=\",\n                \">"
+graph_prop(key, value) 	::= "actions:add_property(<key>,<value>)"
 
 //handling node
-node_lst(nodes) ::= "<nodes; separator=\", \">"
-node(id, props) ::= "actions:add_node(<id>, [<props>])"
+node_lst(nodes) 	::= "<nodes; separator=\",\n                \">"
+node(id, props) 	::= "actions:add_node(<id>, [<props>])"
 
 // handling edges
-edge_lst(edges) ::= "<edges; separator=\", \">"
+edge_lst(edges) 	::= "<edges; separator=\",\n                \">"
 edge(left, right, props) ::= 
 	"actions:add_edge(<left>, <right>, [<props>])"
 
 // handling properties for nodes and edges
-prop_lst(props) ::= "<props; separator=\", \">"
-prop(key, value) ::= "[<key>, <value>]"
+prop_lst(props) 	::= "<props; separator=\", \">"
+prop(key, value) 	::= "[<key>, <value>]"
+
+
+// handling compositions
+composition(name, inputs, outputs, directives) ::= <<
+%% Composition <name> (Builder)
+build_compiled_composition(<name>, Composition) :- 
+  composition:build_pool(<name>, 
+                         [<inputs>], 
+                         [<outputs>], 
+                         Empty),
+  Directives = <directives>,
+  composition:push_directive_set(Empty, Directives, Composition),!.
+:- build_compiled_composition(<name>, C), composition:push_into_db(C).
+>>
+
+graph_lst(graphs) 	::= "<graphs; separator=\", \">"
+
+compo_dir_lst(directives) ::= "[<directives; separator=\",\n                \">]"
+compo_dir(algo, inputs, outputs) ::= <<
+dir(<algo>, 
+                    [<inputs; separator=", ">], 
+                    [<outputs; separator=", ">])
+>>
+
+algo_bind(param, value) ::= "[<param>, <value>]"
+algo_graph(graph) 	::= "graph(<graph>)"
+algo_term(term) 	::= "term(<term>)"
+algo_graph_set(set) 	::= "graph_set([<set; separator=\", \">])"
+
+
+
+

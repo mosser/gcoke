@@ -19,20 +19,31 @@
  *
  * @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
  **/
+package org.gcoke.dsl.compiler;
+
 import java.io.*;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 
 public class ASTBuilder {
 
-    public static CommonTree run(InputStream input) throws Exception {
+    public static GCoKeParser buildParser(InputStream input) throws Exception {
 	ANTLRInputStream in = new ANTLRInputStream(input);
 	GCoKeLexer lexer = new GCoKeLexer(in);
 	CommonTokenStream tokens = new CommonTokenStream(lexer);
 	GCoKeParser parser = new GCoKeParser(tokens);
+	return parser;
+    }
+
+    public static CommonTree buildAST(GCoKeParser parser) throws Exception {
 	GCoKeParser.source_return r = parser.source();
 	CommonTree tree = (CommonTree) r.getTree();
+	//System.out.println(tree.toStringTree()); // Grammar debug (kind of)
 	return tree;
+    }
+    
+    public static CommonTree run(InputStream input) throws Exception {
+	return buildAST(buildParser(input));
     }
 
 }

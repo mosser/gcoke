@@ -19,6 +19,7 @@
  *
  * @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
  **/
+package org.gcoke.dsl.compiler;
 
 import java.io.*;
 import org.antlr.runtime.tree.*;

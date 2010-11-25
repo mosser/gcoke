@@ -1,10 +1,6 @@
 *~
 .*~
 gcoke_compiler.jar
-*.class
-output
+gen
 org
-*.tokens
-*Parser.java
-*Lexer.java
-*Eval.java
+

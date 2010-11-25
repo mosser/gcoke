@@ -22,14 +22,15 @@
 tree grammar GCoKeEval;
 
 options {
-  tokenVocab=GCoke;
-  ASTLabelType=CommonTree;
-  output=template;
+  tokenVocab	= GCoke;
+  ASTLabelType	= CommonTree;
+  output	= template;
 }
 
+@header { package org.gcoke.dsl.compiler; }
 
 // Source handling
-source	:	^(SOURCE artefacts+=artefact+) 
+source	:	^(SOURCE artefacts+=artefact*) 
 	-> 	source(artefacts={$artefacts});
 
 // Artefact handling
@@ -40,8 +41,40 @@ artefact:	^(RAW file=STRING)
 	|	^(GRAPH id=ID nodes=node_lst 
 		        edges=edge_lst? props=graph_prop_lst?)
 		-> 	graph(id={$id.text}, nodes={nodes}, 
-			 	  edges={edges}, props={props});
-	
+			 	  edges={edges}, props={props})
+	|	^(REQUIRE file=STRING ^(SOURCE artefacts+=artefact+))
+		-> 	require(file_name={$file.text}, artefacts={$artefacts})
+	|	^(COMPOSITION name=ID ^(COMPO_INPUTS ins+=graph_lst)
+			      ^(COMPO_OUTPUTS outs+=graph_lst)
+			      dir=compo_dir_lst)
+		-> 	composition(name={$name.text}, 
+				    inputs={$ins}, outputs={$outs},
+				    directives={dir})
+	;
+
+/** composition)specific rules **/
+graph_lst
+	:	graphs+=ID* 
+		-> graph_lst(graphs={$graphs});
+compo_dir_lst
+	:	^(COMPO_DIR_LST dir+=compo_dir+)
+		-> compo_dir_lst(directives={$dir});
+compo_dir
+	:	^(COMPO_DIR algo=ID ^(ALGO_INPUTS ins+=algo_bind*)
+			    ^(ALGO_OUTPUTS outs+=algo_bind*))
+		-> compo_dir(algo={$algo.text}, inputs={$ins}, outputs={$outs});
+
+algo_bind
+	:	^(ALGO_BIND param=ID value=algo_param_value)
+		-> algo_bind(param={$param.text}, value={value});
+algo_param_value
+	:	^(ALGO_GRAPH graph=ID) 		
+		-> algo_graph(graph={$graph.text})
+	|	^(ALGO_TERM data=STRING)	
+		-> algo_term(term={$data.text})
+	|	^(ALGO_GRAPH_SET set+=ID*)	
+		-> algo_graph_set(set={$set}) 
+	;
 
 /** Graph-specific rules **/
 
@@ -60,7 +93,7 @@ node	:	^(NODE id=ID props=prop_lst?)
 
 // edges handling (graph internal)
 edge_lst:	^(EDGE_LST edges+=edge+)
-		-> 	edge_lst(edges={edges});
+		-> 	edge_lst(edges={$edges});
 edge	:	^(EDGE left=ID right=ID props=prop_lst?)
 		-> 	edge(left={$left.text},right={$right.text},
 			   	 props={props});

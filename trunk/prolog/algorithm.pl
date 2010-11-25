@@ -1,5 +1,5 @@
 %%%%
-%% This file is part of gCoke [ http://www.gcoke.org ]
+%% This file is part of gCoKe [ http://www.gcoke.org ]
 %%
 %% Copyright (C) 2010-  Sebastien Mosser
 %%
@@ -20,5 +20,6 @@
 %% @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
 %%%%
 
-%% We simply load the automata module.
-:- load_module('automata').
+:- module(algorithm, []).
+
+:- channels:declare(algorithm(declaration)).

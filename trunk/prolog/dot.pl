@@ -1,20 +1,20 @@
 %%%
-%% This file is part of gCoke [ http://www.gcoke.org ]
+%% This file is part of gCoKe [ http://www.gcoke.org ]
 %%
 %% Copyright (C) 2010-  Sebastien Mosser
 %%
-%% gCoke is free software; you can redistribute it and/or modify
+%% gCoKe is free software; you can redistribute it and/or modify
 %% it under the terms of the GNU Lesser General Public License as 
 %% published by the Free Software Foundation; either version 2 of 
 %% the License, or (at your option) any later version.
 %%
-%% gCoke is distributed in the hope that it will be useful,
+%% gCoKe is distributed in the hope that it will be useful,
 %% but WITHOUT ANY WARRANTY; without even the implied warranty of
 %% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %% GNU Lesser General Public License for more details.
 %%
 %% You should have received a copy of the GNU Lesser General Public 
-%% License along with gCoke; if not, write to the Free Software Foundation,
+%% License along with gCoKe; if not, write to the Free Software Foundation,
 %% Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 %%
 %% @author   Main    Sebastien Mosser  [mosser@polytech.unice.fr]
@@ -85,6 +85,10 @@
 %%    -> p(+Graph, +Cluster, -Prop_list).
 %%    -> see graph_handler
 %%
+%%  - custom_code: allows users to defines specific Graphviz code
+%%    -> p(+Graph, -Code).
+%%    -> the user-given code is added at the end of the generated one.
+%%
 %% Implementation Remarks:
 %%   - Assumption (strong): User-given predicate are deterministic and cannnot 
 %%     fail. A more robust version should ensure the determinism (with a !) and 
@@ -105,6 +109,7 @@ get_value(_, graph_handler,   dot:default_graph_handler) :- !.
 get_value(_, node_handler,    dot:default_node_handler) :- !.
 get_value(_, edge_handler,    dot:default_edge_handler) :- !.
 get_value(_, cluster_handler, dot:default_cluster_handler) :- !.
+get_value(_, custom_code,     dot:default_custom_code) :- !.
 
 %%%%
 %% Default Handler for graph' elements
@@ -118,9 +123,7 @@ default_partition(Graph, Main, []) :-
 %% default_graph_config/1: default_graph_config(+Config_list)
 % Use Courier font and record-shaped nodes.
 default_graph_config(Config_list) :- 
-	Config_list = ['fontname = Courier', 
-	               'node [fontname="Courier", shape="record"]', 
-		       'edge [fontname="Courier"]'].
+	Config_list = [].
 
 %% default_graph_handler/2: default_graph_handler(+G, -Prop_list)
 % The graph label is unified with its name.
@@ -139,6 +142,10 @@ default_edge_handler(_, _, []).
 %% default_cluster_handler/3: default_cluster_handler(+G, +Cluster, -List)
 % No clusters in the default implementation
 default_cluster_handler(_,_,_,_).
+
+%% default_custom_code/2: default_custom_code(+Graph,-Code).
+% Allows user-defined custom code, expressed as plain Graphviz
+default_custom_code(_,'').
 
 %%%%
 %% Graph -> dot-handled file format 
@@ -189,8 +196,10 @@ transform(Graph, Builder, Dot_code) :-
 	build_graph_properties(Builder, Graph, Graph_prop_code),
 	build_clusters(Builder, Graph, Clusters, Clusters_code),
 	build_main_graph(Builder, Graph, Main, Main_graph_code),
-	swritef(Dot_code, 'digraph %w {\n%w%w\n%w\n}', 
-                [Name, Graph_prop_code, Clusters_code, Main_graph_code]), !.
+	build_custom_code(Builder, Graph, Custom_code),
+	swritef(Dot_code, 'digraph %w {\n%w%w\n%w\n%w\n}', 
+                [Name, Graph_prop_code, Clusters_code, 
+		 Main_graph_code, Custom_code]), !.
 
 %%%%
 %% Graph handling
@@ -307,6 +316,14 @@ build_clusters_inner(Graph, Cluster, Builder, Dot_code) :-
 build_cluster_content(Graph, Cluster, Builder, Dot_code) :- 
 	get_value(Builder, node_handler, Node_handler),
 	build_nodes(Graph, Cluster, Node_handler, cluster, Dot_code).
+
+%%%%
+%% Custom Code handling
+%%%%
+
+build_custom_code(Builder, Graph, Dot_code) :- 
+	get_value(Builder, custom_code, Handler), 
+	call(Handler, Graph, Dot_code).
 
 %%%%
 %% Helpers 

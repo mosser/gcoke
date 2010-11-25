@@ -3,21 +3,21 @@
 function generate() 
 {
     echo "## Generating Java file from ANTLR description"
-    java org.antlr.Tool *.g
+    java org.antlr.Tool -o gen grammars/*.g
 }
 
 function compile()
 {
     echo "## Compiling Java source file"
-    javac -d . *.java
+    javac -d . src/*.java gen/grammars/*.java
 }
 
 function build_jar()
 {
     echo "## Building executable JAR file"
-    jar cmf MANIFEST.MF gcoke_compiler.TMP *.class templates/*.stg
-    ./clean.sh
-    mv gcoke_compiler.TMP gcoke_compiler.jar
+    cp -r templates/*.stg  org/gcoke/dsl/compiler/.
+    jar cmf MANIFEST.MF gcoke_compiler.jar org
+    rm -rf gen org 
 }
 
 function main()

@@ -1,0 +1,15 @@
+/**
+ * A gck file which require another one
+ * @author Sebastien Mosser <sm@gcoke.org>
+ */
+
+// Compilation: gckc.sh -in require.gck
+
+// a graph, as usual
+graph g { n; m; n -> m; }
+
+// gckc will compile the content of the given file
+require 'simple.gck';
+
+// Warning: The relative path root is the directory used to invoke gckc
+
