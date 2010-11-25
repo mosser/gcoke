@@ -19,6 +19,8 @@
  *
  * @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
  **/
+package org.gcoke.dsl.compiler;
+
 import java.io.*;
 
 public class Main {

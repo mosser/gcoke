@@ -1,23 +1,23 @@
 %%%%
-%% This file is part of gCoke [ http://www.gcoke.org ]
+%% This file is part of gCoKe [ http://www.gcoke.org ]
 %%
 %% Copyright (C) 2010-  Sebastien Mosser
 %%
-%% gCoke is free software; you can redistribute it and/or modify
+%% gCoKe is free software; you can redistribute it and/or modify
 %% it under the terms of the GNU Lesser General Public License as 
 %% published by the Free Software Foundation; either version 2 of 
 %% the License, or (at your option) any later version.
 %%
-%% gCoke is distributed in the hope that it will be useful,
+%% gCoKe is distributed in the hope that it will be useful,
 %% but WITHOUT ANY WARRANTY; without even the implied warranty of
 %% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %% GNU Lesser General Public License for more details.
 %%
 %% You should have received a copy of the GNU Lesser General Public 
-%% License along with gCoke; if not, write to the Free Software Foundation,
+%% License along with gCoKe; if not, write to the Free Software Foundation,
 %% Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 %%
-%% @author   Main    Sebastien Mosser  [mosser@polytech.unice.fr]
+%% @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
 %%%%
 
 
@@ -52,12 +52,12 @@ gwf(Format, Args) :-
 % Load Path, as a Plain Old Prolog Source (POPS) file.
 load_pops(Path) :-
 	set_prolog_flag(verbose_load, false),
-	gwf('%% Loading gCoke source file  [%w] ...\n', [Path]), [Path].
+	gwf('%% Loading gCoKe source file  [%w] ...\n', [Path]), [Path].
 
 %% load_source/1: load_source(+Path)
 % load the gcoke module written in the file Path.
 load_module(Path) :- 
-	gwf('%% Loading gCoke module file  [%w] ...\n', [Path]),
+	gwf('%% Loading gCoKe module file  [%w] ...\n', [Path]),
         use_module(Path).
 
 %% load_lib/1: load_lib(+Lib)
@@ -75,8 +75,8 @@ load_lib(Lib) :-
 % Print header informations, according to adore_silence setting.
 header :- 
 	gw('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'),
-        gw('%%           gCoke Copyright (C) 2010 - ...          %%'),
-        gw('%%          Graph-based COmposition KErnel           %%'),
+        gw('%%           gCoKe Copyright (C) 2010 - ...          %%'),
+        gw('%%          a Graph-based COmposition KErnel         %%'),
         gw('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'),
         gw('%%  Author:  Sebastien Mosser < sm@gcoke.org >       %%'),
         gw('%%  Website: http://www.gcoke.org                    %%'),
@@ -102,8 +102,8 @@ load_core :-
 	load_module(graph), load_module(queries), 
 	load_module(constraints), load_module(engine), 
 	load_module(actions), load_module(dot), load_module(trace), 
-	load_module(algorithm),
-	true.
+	load_module(algorithm), load_module(composition), 
+	load_module(emacs_mode), true.
     
 
 %% load_local_config/0: load_local_config

@@ -34,7 +34,15 @@ build_empty(gcoke_trace(Id,[])) :-
 
 %% read_identifier/2: read_identifier(+T, -Id):
 % Unify Id with the (assumed) unique identifier associated to T.
-read_identifier(gcoke_trace(Id,_),Id).
+read_identifier(gcoke_trace(Id,_), Id).
+
+%% merge/2: merge(+Trace_set, -Result)
+% Unify Result with a trace model that contains all the traces given in the 
+% given Trace_set.
+merge(Trace_set, Result) :- 
+	build_empty(Empty_trace), read_identifier(Empty_trace, Id),
+	findall(L, (member(T,Trace_set),T = gcoke_trace(_,L)), Contents),
+	flatten(Contents, Flattened), Result = gcoke_trace(Id, Flattened).
 
 %%%%
 %% Pushing data into a Trace model.
@@ -91,13 +99,30 @@ as_text(gcoke_trace(_,L), Text) :-
 %% as_dot/2: as_dot(+Trace, -Dot_code):
 % Unify Dot_code with a Graphviz representation of Trace
 as_dot(gcoke_trace(_,L), Dot_code) :- 
-	findall(S,( member(pebble(X,Y,Z),L), 
-	            swritef(S,'%w -> %w [label="%s"];',[X,Y,Z])), Raw_edges),
+	%% Nodes
+	findall(X,(member(pebble(X,_,_),L)|member(pebble(X,_,_),L)), Raw_nodes),
+	sort(Raw_nodes, Node_list),
+	findall(S,( member(N,Node_list), trace:elem_to_dot(N,Id),
+	            swritef(S,'%w [label="%w"]', [Id,N]) ),
+	        Node_elems),
+	swrite_list(Node_elems, '\n', '  ', Nodes),
+	%% Edges
+	findall(S,( member(pebble(X,Y,Z),L), trace:elem_to_dot(X,Id_x),
+	            trace:elem_to_dot(Y, Id_y),
+	            swritef(S,'%w -> %w [label="%s"];',[Id_x,Id_y,Z]) ), 
+		Raw_edges),
 	swrite_list(Raw_edges, '\n', '  ', Edges),
-	swrite_list(['fontname = Courier;', 'node [fontname = "Courrier"];',
+	%% Final graph code
+	swrite_list(['fontname = Courier;', 'node [fontname = "Courrier", shape="record"];',
 		     'edge [fontname = "Courrier"];', 'rankdir=LR;'],
 		    '\n','  ',Head),
-	swritef(Dot_code,'digraph trace_model {\n%w\n%w\n}',[Head, Edges]).
+	swritef(Dot_code, 'digraph trace_model {\n%w\n%w\n%w\n}',
+                [Head, Nodes, Edges]).
+
+%% elem_to_dot/2: elem_to_dot(Elem,Dot_id)  
+% transfom a named element Elem (e.g., g(e)) into a valid dot id (e.g., g_e)
+elem_to_dot(Elem, Dot_id) :- 
+	Elem =.. List, swrite_list(List,'_','',Dot_id).
 
 %% as_picture/3: as_picture(+Trace, +Format, +File_name)
 % Create a file File_name.Format, containing a graph. representation of Trace.
@@ -122,10 +147,10 @@ show(Trace) :-
 %% Test
 %%%%
 
-%% test(Trace) :- 
-%% 	build_empty(T1), 
-%% 	push(T1, a, b, "a to b", T2), push(T2, b, c, "b to c", T3),
-%% 	multi_push(T3, [d,e], h, "(d,e) to h", T4), 
-%% 	multi_push(T4, [f,g], i, "(f,g) to i", T5), 
-%% 	multi_push(T5, [h,i], j, "(h,i) to j", T6), 
-%% 	push(T6, j, k, "j to k", Trace).
+test(Trace) :- 
+ 	build_empty(T1), 
+ 	push(T1, graph(a), b, "a to b", T2), push(T2, b, c, "b to c", T3),
+ 	multi_push(T3, [d,e], h, "(d,e) to h", T4), 
+ 	multi_push(T4, [f,g], i, "(f,g) to i", T5), 
+ 	multi_push(T5, [h,i], j, "(h,i) to j", T6), 
+ 	push(T6, j, k, "j to k", Trace).

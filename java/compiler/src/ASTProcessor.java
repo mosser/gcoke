@@ -19,9 +19,8 @@
  *
  * @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
  **/
-
+package org.gcoke.dsl.compiler;
 import java.io.*;
-import java.net.URL;
 import org.antlr.runtime.*;
 import org.antlr.runtime.tree.*;
 import org.antlr.stringtemplate.*;
@@ -38,10 +37,9 @@ public class ASTProcessor {
 	return (StringTemplate) wr.getTemplate();
     }
 
-
     private static StringTemplateGroup initializeTemplate(String tplFile) 
 	throws Exception {
-	String res = "templates/"+tplFile+".stg"; 
+	String res = tplFile+".stg"; 
 	InputStream stgStream = ASTProcessor.class.getResourceAsStream(res);
 	Reader stgReader = new InputStreamReader(stgStream);
 	StringTemplateGroup templates = new StringTemplateGroup(stgReader);

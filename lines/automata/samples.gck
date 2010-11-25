@@ -1,15 +1,22 @@
 /** Automata samples
  * @author: Sebastien Mosser
  **/
+sniff automata; // We're using the automata 'line'
 
-// "Sniffing" the automata specialization
-sniff automata;
-
-// Describing a Moore automaton
-graph a [family='moore'] {
-  // Declared nodes
+// The following automata recognize the 01*0 regular expression
+graph zoz [regexp='01*0'] {
   s1 [kind='start']; s2; s3 [kind='final'];
-  // Available transitions
-  s1 -> s2 [letter='0'];
-  s2 -> s3 [letter='1', letter='0'];
+  s1 -> s2 [symbol='0']; s2 -> s2 [symbol='1']; s2 -> s3 [symbol='0'];
 }
+
+// The following automata recognize the 10*1 regular expression
+graph ozo [regexp='10*1'] {
+  s1 [kind='start']; s2; s3 [kind='final'];
+  s1 -> s2 [symbol='1']; s2 -> s2 [symbol='0']; s2 -> s3 [symbol='1'];
+}
+
+composition example (ozo, zoz) [automata] {
+ sequence(left: zoz, right: ozo)   => (out: seq_zoz_ozo);
+ sequence(left: ozo, right: zoz)   => (out: seq_ozo_zoz);
+ parallel(first: ozo, second: zoz) => (out: par_ozo_zoz);
+} => (seq_zoz_ozo, seq_ozo_zoz, par_ozo_zoz);
