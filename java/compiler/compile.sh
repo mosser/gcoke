@@ -1,15 +1,17 @@
 #!/bin/sh
 
+CP=.:$GCOKE_HOME/java/compiler/libs/antlr-3.3-complete.jar
+
 function generate() 
 {
     echo "## Generating Java file from ANTLR description"
-    java org.antlr.Tool -o gen grammars/*.g
+    java -classpath $CP org.antlr.Tool -o gen grammars/*.g
 }
 
 function compile()
 {
     echo "## Compiling Java source file"
-    javac -d . src/*.java gen/grammars/*.java
+    javac -classpath $CP -d . src/*.java gen/grammars/*.java
 }
 
 function build_jar()
