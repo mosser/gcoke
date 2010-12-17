@@ -20,3 +20,4 @@ composition example (ozo, zoz) [automata] {
  sequence(left: ozo, right: zoz)   => (out: seq_ozo_zoz);
  parallel(first: ozo, second: zoz) => (out: par_ozo_zoz);
 } => (seq_zoz_ozo, seq_ozo_zoz, par_ozo_zoz);
+
