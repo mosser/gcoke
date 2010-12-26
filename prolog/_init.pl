@@ -99,8 +99,8 @@ load_libraries :-
 % load gCoke core, as modules or plain old prolog source code
 load_core :-  
 	load_pops(helpers), load_module(channels), load_pops(sniffs), 
-	load_module(graph), load_module(queries), 
-	load_module(constraints), load_module(engine), 
+	load_module(graph), load_module(queries), load_module(path),
+	load_module(constraints), load_module(engine), load_module(errors),
 	load_module(actions), load_module(dot), load_module(trace), 
 	load_module(algorithm), load_module(composition), 
 	load_module(emacs_mode), true.

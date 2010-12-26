@@ -62,7 +62,7 @@ build_compiled_graph(<id>, Graph, Counter) :-
   Edges_Acts = [<edges>],
   flatten([Props_Acts, Nodes_Acts, Edges_Acts], Actions),
   engine:do_sequence(Empty, Actions, Graph, Counter),!.
-:- build_compiled_graph(<id>, G, _), graph:push_into_db(G).
+:- errors:catch_and_ignore((build_compiled_graph(<id>, G, _), graph:push_into_db(G))).
 >>
 
 // handling graph properties
@@ -93,7 +93,7 @@ build_compiled_composition(<name>, Composition) :-
                          Empty),
   Directives = <directives>,
   composition:push_directive_set(Empty, Directives, Composition),!.
-:- build_compiled_composition(<name>, C), composition:push_into_db(C).
+:- errors:catch_and_ignore((build_compiled_composition(<name>, C), composition:push_into_db(C))).
 >>
 
 graph_lst(graphs) 	::= "<graphs; separator=\", \">"
