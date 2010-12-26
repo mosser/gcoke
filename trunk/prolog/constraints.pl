@@ -108,9 +108,9 @@ check_invariants_loop([P|Tail], Graph) :-
 %% build_error/4: build_error(+Graph, +Predicate, +Extra, -Error)
 % Unify Error with the associated error term, according to the other variables.
 throw_error(Graph, Predicate, Extra) :- 
-	graph:read_name(Graph,Name), swritef(Info,'Graph %w', [Name]), 
+	graph:read_name(Graph,Name), %swritef(Info,'Graph %w', [Name]), 
 	Error = error(gcoke_constraint_error(Predicate,Extra),
-	              context(Info,'Constraint Violation')),
+	              context(graph(Name),'Constraint violation')),
 	throw(Error).
 
 %% msg/4: msg(+Graph, +Level, +Format, +Args)

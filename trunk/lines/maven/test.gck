@@ -1,0 +1,88 @@
+
+sniff maven;
+
+graph org_ow2_frascati_frascati_modules [origin='internal',name='org.ow2.frascati.frascati-modules'] {
+	/** Nodes **/
+	org_ow2_frascati_frascati_modules [kind='pom',name='org.ow2.frascati.frascati-modules'];
+	junit_junit [kind='jar',name='junit.junit'];
+
+	/** Edges **/
+	org_ow2_frascati_frascati_modules -> junit_junit [scope='test'];
+
+} 
+
+graph org_ow2_frascati_frascati_sca_compiler_parent [origin='internal',name='org.ow2.frascati.frascati-sca-compiler-parent'] {
+	/** Nodes **/
+	org_ow2_frascati_frascati_sca_compiler_parent [kind='pom',name='org.ow2.frascati.frascati-sca-compiler-parent'];
+	junit_junit [kind='jar',name='junit.junit'];
+
+	/** Edges **/
+	org_ow2_frascati_frascati_sca_compiler_parent -> junit_junit [scope='test'];
+}
+
+graph org_ow2_frascati_frascati_util [origin='internal',name='org.ow2.frascati.frascati-util'] {
+	/** Nodes **/
+	org_ow2_frascati_frascati_util [kind='jar',name='org.ow2.frascati.frascati-util'];
+	org_eclipse_stp_sca_osoa_java_osoa_java_api [kind='jar',name='org.eclipse.stp.sca.osoa.java.osoa-java-api'];
+	org_objectweb_fractal_fractal_api [kind='jar',name='org.objectweb.fractal.fractal-api'];
+	junit_junit [kind='jar',name='junit.junit'];
+
+	/** Edges **/
+	org_ow2_frascati_frascati_util -> org_eclipse_stp_sca_osoa_java_osoa_java_api [scope='compile'];
+	org_ow2_frascati_frascati_util -> org_objectweb_fractal_fractal_api [scope='compile'];
+	org_ow2_frascati_frascati_util -> junit_junit [scope='test'];
+
+}
+
+graph org_ow2_frascati_frascati_sca_parser [origin='internal',name='org.ow2.frascati.frascati-sca-parser'] {
+	/** Nodes **/
+	org_ow2_frascati_frascati_sca_parser [kind='jar',name='org.ow2.frascati.frascati-sca-parser'];
+	org_ow2_frascati_frascati_util [kind='jar',name='org.ow2.frascati.frascati-util'];
+	org_eclipse_stp_sca_osoa_java_osoa_java_api [kind='jar',name='org.eclipse.stp.sca.osoa.java.osoa-java-api'];
+	org_objectweb_fractal_fractal_api [kind='jar',name='org.objectweb.fractal.fractal-api'];
+	org_ow2_frascati_tinfi_frascati_tinfi_membranes_oo [kind='jar',name='org.ow2.frascati.tinfi.frascati-tinfi-membranes-oo'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime [kind='jar',name='org.ow2.frascati.tinfi.frascati-tinfi-runtime'];
+	org_objectweb_fractal_julia_julia_runtime [kind='jar',name='org.objectweb.fractal.julia.julia-runtime'];
+	org_objectweb_fractal_juliac_juliac_runtime [kind='jar',name='org.objectweb.fractal.juliac.juliac-runtime'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime_api [kind='jar',name='org.ow2.frascati.tinfi.frascati-tinfi-runtime-api'];
+	aopalliance_aopalliance [kind='jar',name='aopalliance.aopalliance'];
+	org_oasis_open_sca_j_sca_caa_apis [kind='jar',name='org.oasis-open.sca.j.sca-caa-apis'];
+	org_eclipse_stp_sca_introspection_sca_model_introspection [kind='jar',name='org.eclipse.stp.sca.introspection.sca-model-introspection'];
+	org_eclipse_stp_sca_sca_model [kind='jar',name='org.eclipse.stp.sca.sca-model'];
+	org_eclipse_emf_ecore [kind='jar',name='org.eclipse.emf.ecore'];
+	org_eclipse_core_runtime [kind='jar',name='org.eclipse.core.runtime'];
+	org_eclipse_equinox_common [kind='jar',name='org.eclipse.equinox.common'];
+	org_eclipse_emf_common [kind='jar',name='org.eclipse.emf.common'];
+	org_eclipse_emf_ecore_xmi [kind='jar',name='org.eclipse.emf.ecore.xmi'];
+	junit_junit [kind='jar',name='junit.junit'];
+
+	/** Edges **/ 
+	org_ow2_frascati_frascati_sca_parser -> org_ow2_frascati_frascati_util [scope='compile'];
+	org_ow2_frascati_frascati_util -> org_eclipse_stp_sca_osoa_java_osoa_java_api [scope='compile'];
+	org_ow2_frascati_frascati_util -> org_objectweb_fractal_fractal_api [scope='compile'];
+	org_ow2_frascati_frascati_sca_parser -> org_ow2_frascati_tinfi_frascati_tinfi_membranes_oo [scope='compile'];
+	org_ow2_frascati_tinfi_frascati_tinfi_membranes_oo -> org_ow2_frascati_tinfi_frascati_tinfi_runtime [scope='compile'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime -> org_objectweb_fractal_julia_julia_runtime [scope='compile'];
+	org_objectweb_fractal_julia_julia_runtime -> org_objectweb_fractal_fractal_api [scope='compile'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime -> org_objectweb_fractal_juliac_juliac_runtime [scope='compile'];
+	org_objectweb_fractal_juliac_juliac_runtime -> org_objectweb_fractal_fractal_api [scope='compile'];
+	org_objectweb_fractal_juliac_juliac_runtime -> org_objectweb_fractal_julia_julia_runtime [scope='compile'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime -> org_ow2_frascati_tinfi_frascati_tinfi_runtime_api [scope='compile'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime_api -> org_objectweb_fractal_fractal_api [scope='compile'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime_api -> aopalliance_aopalliance [scope='compile'];
+	org_ow2_frascati_tinfi_frascati_tinfi_runtime -> org_oasis_open_sca_j_sca_caa_apis [scope='compile'];
+	org_ow2_frascati_frascati_sca_parser -> org_eclipse_stp_sca_introspection_sca_model_introspection [scope='compile'];
+	org_eclipse_stp_sca_introspection_sca_model_introspection -> org_eclipse_stp_sca_sca_model [scope='compile'];
+	org_eclipse_stp_sca_sca_model -> org_eclipse_emf_ecore [scope='compile'];
+	org_eclipse_emf_ecore -> org_eclipse_core_runtime [scope='compile'];
+	org_eclipse_core_runtime -> org_eclipse_equinox_common [scope='compile'];
+	org_eclipse_emf_ecore -> org_eclipse_emf_common [scope='compile'];
+	org_eclipse_stp_sca_sca_model -> org_eclipse_emf_ecore_xmi [scope='compile'];
+	org_eclipse_emf_ecore_xmi -> org_eclipse_core_runtime [scope='compile'];
+	org_eclipse_emf_ecore_xmi -> org_eclipse_emf_ecore [scope='compile'];
+	org_eclipse_stp_sca_sca_model -> org_eclipse_emf_common [scope='compile'];
+	org_eclipse_emf_common -> org_eclipse_core_runtime [scope='compile'];
+	org_eclipse_stp_sca_introspection_sca_model_introspection -> org_eclipse_stp_sca_osoa_java_osoa_java_api [scope='compile'];
+	org_ow2_frascati_frascati_sca_parser -> junit_junit [scope='test'];
+}
+

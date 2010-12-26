@@ -25,14 +25,14 @@
 %% Scalar Getters (may be non-deterministic)
 %%%%
 
-%% select_node_by_name/3: select_node_by_name(+G, +Node_name, -Node)
+%% get_node_by_name/3: get_node_by_name(+G, +Node_name, -Node)
 % Unify Node with the actual node named Node_name in graph G.
 get_node_by_name(Graph, Node_name, Node) :- 
 	graph:has_for_node(Graph, Node), 
 	graph:read_name(Node, Node_name), !. %% single answer by construction. 
 
-%% [nondet] select_edge_by_boundaries/4: 
-%    select_edge_by_boundaries(+Graph, ?Source_name, ?Target_name, -Edge)
+%% [nondet] get_edge_by_boundaries/4: 
+%    get_edge_by_boundaries(+Graph, ?Source_name, ?Target_name, -Edge)
 % Unify Edge with an edge contained in Graph, from Source_name to Target_name.
 get_edge_by_boundaries(Graph, Source_name, Target_name, Edge) :- 
 	graph:has_for_edge(Graph, Edge),
@@ -42,7 +42,7 @@ get_edge_by_boundaries(Graph, Source_name, Target_name, Edge) :-
 %% Property-based searching (itrinsically non deterministic)
 %%%%
 
-%% [nondet] get_node_by_property/3: get_node(+Graph, +Key_value_list, -Node)
+%% [nondet] get_node_by_properties/3: get_node_...(+Graph, +Key_values, -Node)
 % unify Node with a node contained by Graph, holding a superset of properties 
 % described in Key_value_list.
 get_node_by_properties(Graph, Key_value_list, Node) :- 

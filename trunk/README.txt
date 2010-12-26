@@ -18,6 +18,7 @@ gCoKe assumes that the following applications are available on your system:
 
   - swipl
   - graphviz (especially the 'dot' tool)
+  - Java (to compile the gCoKe compiler)
 
  I. Shell setup
 
@@ -27,11 +28,13 @@ following code snippet:
 GCOKE_HOME=/Users/mosser/work/gcoke
 PATH=$PATH:$GCOKE_HOME/bin
 GCOKE_DOT='/usr/local/bin/dot -Gfontpath=/System/Library/fonts'
-export GCOKE_HOME GCOKE_DOT PATH
+GCOKE_OPEN='open'
+export GCOKE_HOME GCOKE_OPEN GCOKE_DOT PATH
 
 Replace:
   - '/Users/mosser/work/gcoke' by the checkout repository
   - '/usr/local/bin/dot ...' by a graphviz DOT command line
+  - 'open' by a picture visualizer, if you're not using OS X
 
  II. Compiler setup
 
@@ -73,5 +76,4 @@ Add the following code snippet in your ~/.emacs file to load the gCoKe mode:
 (setenv "GCOKE_HOME" "/Users/mosser/work/gcoke")
 (load-file (concat (getenv "GCOKE_HOME") "/gcoke.el"))
 (setenv "PATH" (concat (getenv "PATH") ":" (getenv "GCOKE_HOME") "/bin"))
-
 
