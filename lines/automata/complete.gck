@@ -1,0 +1,29 @@
+/** Automata handling through gCoKe
+ * @author Sebastien mosser [sm@gcoke.org]
+ * 
+ * Available algorithms:
+ *   - build_elementaries: for a given symbol 's', build the automata 
+ *         associated to the recognition of 's', 's+' and 's*'.
+ *   - sequence: create a sequence of two automata
+ *   - parallel: put the two automata in //.
+ **/
+
+sniff automata;
+
+composition init  () [automata] {
+  build_elementaries(letter: 'a') => (single: a, plus: a_plus, star: a_star);
+  build_elementaries(letter: 'b') => (single: b, plus: b_plus, star: b_star);
+} => (a, a_star, a_plus, b, b_star, b_plus);
+
+composition sequence (a,b) [automata] {
+  sequence(left: a,  right: b)  => (seq: ab);
+  sequence(left: b,  right: a)  => (seq: ba);
+  sequence(left: ab, right: ab) => (seq: abab);
+  sequence(left: ab, right: ba) => (seq: abba);
+  sequence(left: ba, right: ab) => (seq: baab);
+  sequence(left: ba, right: ba) => (seq: baba);
+} => (abab, abba, baab, baba);
+
+composition parallel (abba, baba) [automata] {
+  parallel(set: {abba, baba}) => (par: abba_or_baba);
+} => (abba_or_baba);

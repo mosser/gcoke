@@ -49,6 +49,23 @@
  		       ",G),graph_to_dot(G,'" f "')")))
     (gcoke-do-n-show goal f "graph -> dot transformation")))
 
+;; Prompt for a composition name, and display the associated picture
+(defun gcoke-display-composition-as-png () (interactive)
+  (let ((compo (read-from-minibuffer "Composition name: ")))
+    (gcoke-build-png-from-composition compo)))
+
+;; Prompt for a composition name, and display the associated dot code
+(defun gcoke-display-composition-as-dot () (interactive)
+  (let* ((compo (read-from-minibuffer "Composition name: "))
+ 	 (f (make-temp-file "gcoke_dot_generation" nil ".dot"))
+	 (goal (concat "build_compiled_composition(" compo 
+ 		       ",C),composition:as_dot_file([C],'" f "')")))
+    (gcoke-do-n-show goal f "compo -> dot transformation")))
+
+;; Display the complete composition flow as described in the file
+(defun gcoke-display-composition-flow () (interactive)
+  (gcoke-exec "composition:show_all" "composition flow visualization" t))
+
 ;; Display the current element (graph/composition), as a PNG picture
 (defun gcoke-display-current-element ()
   (interactive)
@@ -112,13 +129,18 @@
   ;; Visualization submenu
   (let ((visualMap (make-sparse-keymap "gCoKe visualization keymap")))
     (define-key menuMap [visualization] (cons "Visualization" visualMap))
-  ;(define-key visualMap [transfo-dot] '("Composition as Graphviz... *" . nil))
-  ;(define-key visualMap [transfo-png] '("Composition as PNG... *" . nil))
-  ;(define-key visualMap [s0] '("--"))
+    (define-key visualMap [compo-flow] 
+      '("Show composition flow" . gcoke-display-composition-flow))
+    (define-key visualMap [s1] '("--"))
+    (define-key visualMap [compo-dot] 
+      '("Composition as Graphviz..." . gcoke-display-composition-as-dot))
+    (define-key visualMap [compo-png] 
+      '("Composition as PNG..." . gcoke-display-composition-as-png))
+    (define-key visualMap [s0] '("--"))
     (define-key visualMap [graph-dot] 
-      '("Graph as Graphviz... " . gcoke-display-graph-as-dot))
+      '("Graph as Graphviz..." . gcoke-display-graph-as-dot))
     (define-key visualMap [graph-png] 
-      '("Graph as PNG... " . gcoke-display-graph-as-png)))
+      '("Graph as PNG..." . gcoke-display-graph-as-png)))
   ;; Engine submenu
   (let ((repMap (make-sparse-keymap "rep Keymap")))
     (define-key menuMap [rep] (cons "Engine" repMap))
