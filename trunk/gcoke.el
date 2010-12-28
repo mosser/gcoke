@@ -278,9 +278,10 @@
 (defun gcoke-extract-current-element-information ()
   (save-excursion
     (c-beginning-of-defun)
-    (let* ((line (gcoke-read-current-line))
-	   (raw (split-string line " ")))
-      (list (car raw) (cadr raw)))))
+    (let* ((line (gcoke-read-current-line)) (raw (split-string line " "))
+	   (kind (car raw)) 
+	   (name (gcoke-match-regexp "[a-z][a-zA-Z0-9_]*" (cadr raw))))
+      (list kind name))))
 
 ;; For a given graph, display the associated PNG file
 (defun gcoke-build-png-from-graph (graph-name) 
