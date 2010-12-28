@@ -240,7 +240,7 @@ handle_parameter(Param,_,Exts,Algo_id,Dir,Nodes,Int_edges,Ext_edges) :-
 	Param = binding(Param_name, graph_set(Graph_lst)),
 	gensym(set_node, Set_node_id),
 	swritef(Set_node, '%w [shape="circle",label="",style="filled",fillcolor="black", width=0.1,fixedsize=true]', [Set_node_id]),
-        build_edge(Dir, dashed, normal, Set_node_id, Algo_id, Param_name, Set_edge),
+        build_edge(Dir, dashed, open, Set_node_id, Algo_id, Param_name, Set_edge),
         findall(E, (member(G, Graph_lst), member(G, Exts), 
 	            composition:build_edge(Dir, solid, none,G, Set_node_id, '', E)), 
 		Ext_edges),
