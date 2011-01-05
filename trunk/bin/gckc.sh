@@ -23,8 +23,10 @@
 
 COMPILER=$GCOKE_HOME/java/compiler/gcoke_compiler.jar
 
+JAVA_OPTS="-Xmx256M" # Uncomment to process large models (and maybe augment it)
+
 ## do not edit after this line ##
-java -jar $COMPILER $@
+java $JAVA_OPTS -jar $COMPILER $@
 
 
 

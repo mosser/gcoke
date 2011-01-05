@@ -1,0 +1,17 @@
+
+Acknowledgements:
+  - Thanks to Nicolas Petitprez for his implementation of this plugin ^_^.
+
+
+1. Unjar the generator
+
+jar xf archive.jar
+
+
+2. Run the build.sh script to install the MAVEN plugin and run a small example.
+
+cd tmp
+./build.sh
+
+
+See the content of build.sh to adapt it to your own needs.

@@ -34,27 +34,49 @@ declare(Name, Predicate, Signature) :-
 %%  Algorithm signature verification
 %%%%
 
-%% verify(Algo, _) :- 
-%% 	\+ description(Algo, _, _), writef('Unknown algorithm: %w.', [Algo]), fail.
-%% verify(Algo, Call_values) :- 
-%% 	description(Algo, _, Signature), 
-%% 	verify_parameters(Algo, Signature, Call_values).
+verify(Algo, _) :- 
+ 	\+ description(Algo, _, _), writef('Unknown algorithm: %w.', [Algo]), fail.
+verify(Algo, Call_values) :- 
+ 	description(Algo, _, Signature), 
+ 	verify_parameters(Algo, Signature, Call_values).
 
-%% verify_parameters(Algo, Signature, Call_values) :- 
-%% 	findall(E, check_param_error(Signature, Call_values, E), Err_list),
-%% 	(Err_list = [] -> true ; writef('%w: %w',[Algo, Err_list]), fail).
+verify_parameters(Algo, Signature, Call_values) :- 
+ 	findall(E, check_param_error(Signature, Call_values, E), Err_list),
+ 	(Err_list = [] -> true ; writef('%w: %w',[Algo, Err_list]), fail).
 
-%% check_param_error(Signature, Call_values, is_extra(P)) :- 
-%% 	member([P,_], Call_values), 
-%% 	\+ (member(in(P,_), Signature) | member(out(P), Signature)).
-%% check_param_error(Signature, Call_values, is_missing(P)) :- 
-%% 	member(in(P,_), Signature), \+ member([P,_],Call_values).
-%% check_param_error(Signature, Call_values, has_wrong_type(P)) :- 
-%% 	member(in(P,Pred), Signature), member([P,Value], Call_values),
-%% 	\+ call(Pred, Value).
-%% check_param_error(Signature, Call_values, forgotten_output(P)) :- 
-%% 	member(out(P), Signature), \+ member([P,_], Call_values).
+check_param_error(Signature, Call_values, is_extra(P)) :- 
+ 	member([P,_], Call_values), 
+ 	\+ (member(in(P,_), Signature) | member(out(P), Signature)).
+check_param_error(Signature, Call_values, is_missing(P)) :- 
+	member(in(P,_), Signature), \+ member([P,_],Call_values).
+check_param_error(Signature, Call_values, has_wrong_type(P)) :- 
+	member(in(P,Pred), Signature), member([P,Value], Call_values),
+	\+ call(Pred, Value).
+check_param_error(Signature, Call_values, forgotten_output(P)) :- 
+	member(out(P), Signature), \+ member([P,_], Call_values).
 
+
+%%%%
+%% Algorithm execution context
+%%%%
+
+%% FIXME
+
+
+%%%%
+%% Algorithm output
+%%%%
+
+build_output(Graph, Actions, Output) :- 
+	Output = algo_output(Graph, Actions).
+
+extract_graph(algo_output(Graph,_), Graph).
+
+extract_actions(algo_output(_, Actions), Actions).
+
+%%%%
+%% Algorithm execution
+%%%%
 
 %% execute(Call, Outputs) :- 
 %% 	Call = my_call(Algo, Parameters),

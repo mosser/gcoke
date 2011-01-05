@@ -60,4 +60,15 @@ single_props(Automata, Action) :-
          ; Action = automata:add_final(_), L = [[kind, final]]),
 	\+ queries:get_node_by_properties(Automata, L, _).
 
+%%%%
+%% Algorithms
+%%%%
 
+:- algorithm:declare('automata:build_single_recognizer',
+	automata:build_single_recognizer, [in(letter, scalar), out(single)]).
+build_single_recognizer(_, Letter, [[single, Output]]) :-
+	gensym(s, Start), gensym(s, Final),
+	Actions = [add_start(Start), add_final(Final), 
+	           add_trans(Start, Final, [Letter])],
+	graph:build_graph(Letter, Graph),
+	algorithm:build_output(Graph, Actions, Output).
