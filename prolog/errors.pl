@@ -40,7 +40,12 @@
 % succeed (so it does not impact other calls).
 % Remark: Mainly used by the gCoKe compiler (see compiled code).
 catch_and_ignore(Goal) :- 
-	catch(Goal, Exception, display_error(Exception)).
+	catch((Goal -> true ; throw_goal_failure_error(Goal)), 
+	       Exception, display_error(Exception)).
+
+throw_goal_failure_error(G) :- 
+	Error = error(gcoke_failure_error, context(G,'Goal Failure')),
+	throw(Error).
 
 %% display_error/1: display_error(+Exception).
 % Display Exception on stderr.
@@ -63,6 +68,9 @@ handle_details(gcoke_constraint_error(Constraint, Action_term), Result) :-
 	    Kind_code = post -> Kind = postcondition; Kind_code = Kind),
 	swritef(Result, '    - Kind: %w\n    - Constraint: %w\n    - Action: %w\n', 
                  [Kind, Constraint, Action]),!.
+handle_details(gcoke_constraint_error(Constraint, invariant), Result) :- 
+	swritef(Result, '    - Kind: invariant\n    - Constraint: %w\n', 
+                 [Constraint]),!.
 
 handle_details(Generic_term, Result) :-  %% Generic implementation (default)
 	Generic_term =.. L, swrite_list(L, '\n','    - ',Result).
