@@ -101,7 +101,12 @@ compo_dir [String prefix] // used to distributed a given prefix to all the given
 	:	id=ID ins=param_list '=>' outs=param_list ';'
 		{ if (null != prefix) { id.setText(prefix + ":" + $id.text); } }
 						-> ^(COMPO_DIR $id ^(ALGO_INPUTS $ins*)
-							       ^(ALGO_OUTPUTS $outs*));
+							       ^(ALGO_OUTPUTS $outs*))
+	|	mod=ID ':' id=ID ins=param_list '=>' outs=param_list ';'
+		{ id.setText($mod.text + ":" + $id.text); }
+						-> ^(COMPO_DIR $id ^(ALGO_INPUTS $ins*)
+							       ^(ALGO_OUTPUTS $outs*))
+	;
 param_list
 	:	'(' compo_bind? ')'		-> compo_bind?
 	|	'(' compo_bind (',' compo_bind)+ ')' 
