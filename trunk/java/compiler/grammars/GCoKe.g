@@ -28,7 +28,7 @@ options {
 
 /* Imaginary tokens used to structure the AST */ 
 tokens { 
-  SOURCE; GRAPH; REQUIRE; SNIFF; RAW; COMPOSITION;
+  SOURCE; GRAPH; REQUIRE; SNIFF; RAW; COMPOSITION; TRIGGER;
   EDGE; EDGE_LST; NODE; NODE_LST; PROP; PROP_LST;
   COMPO_INPUTS; COMPO_OUTPUTS; COMPO_DIR_LST; COMPO_DIR; 
   ALGO_INPUTS; ALGO_OUTPUTS; ALGO_BIND; ALGO_GRAPH; ALGO_TERM; ALGO_GRAPH_SET;
@@ -65,11 +65,11 @@ WS  :   ( ' ' | '\t' | '\r' | '\n') 			{$channel=HIDDEN;} ;
 
 /* Parser rules */
 source	:	artefact*			-> ^(SOURCE artefact*);
-artefact:	sniff | raw | graph | compo  | require ;
+artefact:	sniff | raw | graph | compo  | trigger | require ;
 
 sniff	:	'sniff' line=ID ';'		-> ^(SNIFF $line);
 raw	:	'require_raw' file=STRING ';'	-> ^(RAW $file);
-
+trigger :	'trigger' composition=ID ';'	-> ^(TRIGGER $composition);
 
 /* Graph-specific (internal) rules */
 graph	:	'graph' id=ID props=prop_lst? '{' nodes=node_lst edges=edge_lst? '}' 

@@ -50,6 +50,7 @@ artefact:	^(RAW file=STRING)
 		-> 	composition(name={$name.text}, 
 				    inputs={$ins}, outputs={$outs},
 				    directives={dir})
+	|	^(TRIGGER composition=ID) -> trigger(composition_name={$composition.text})
 	;
 
 /** composition)specific rules **/
