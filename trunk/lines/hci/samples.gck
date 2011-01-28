@@ -1,0 +1,64 @@
+/** HCI composition examples
+ * @author Sebastien Mosser, based on Christian Brel's examples.
+ **/
+
+sniff hci;
+
+/***********************
+ ** Initial artefacts **
+ ***********************/
+
+graph trim [kind='frame'] {
+  // Nodes: UI elements
+  i10 [kind='field', name='data']; i11 [kind='field', name='letter'];
+  l1  [kind='label', name='trimed_data']; b1  [kind='button'];
+  // Action node (remote invocation)
+  a1  [kind='action', target='trim'];
+  // Edges: dataflow
+  i10 -> a1 [binding='str']; i11 -> a1 [binding='char'];
+  a1  -> l1 [binding='str\'']; b1  -> a1; 
+}
+
+graph reverse [kind='frame'] {
+  // Node: UI elements
+  i2 [kind='field', name='data']; l2 [kind='label', name='reversed_data'];
+  b2 [kind='button'];
+  // Action node (remote invocation)
+  a2 [kind='action', target='reverse'];
+  // Edges: dataflow
+  i2 -> a2 [binding='arg']; a2 -> l2 [binding='arg\'']; b2 -> a2 ;
+}
+
+/***************************
+ ** Expressed composition **
+ ***************************/
+
+composition example_1 (trim, reverse) {
+  common:union(inputs: {trim, reverse}) => (output: merged);
+} => (merged);
+trigger example_1;
+
+composition example_2 (trim, reverse) [hci] {
+  common:union(inputs: {trim, reverse}) => (output: anonymous);
+  parallel(frame: anonymous) => (result: parallelized);
+} => (parallelized);
+trigger example_2;
+
+composition example_3 (trim, reverse) [hci] {
+  common:union(inputs: {trim, reverse}) => (output: anonymous);
+  unify_fields(frame: anonymous) => (result: unified);
+} => (unified);
+trigger example_3;
+
+composition example_4 (trim, reverse) [hci] {
+  sequence(first: trim, second: reverse) => (result: sequenced);
+} => (sequenced);
+trigger example_4;
+
+composition example_5 (trim, reverse) [hci] {
+  common:union(inputs: {trim, reverse}) => (output: anonymous);
+  unify_fields(frame: anonymous) => (result: complete);
+  parallel(frame: anonymous) => (result: complete);
+} => (complete);
+trigger example_5;
+
