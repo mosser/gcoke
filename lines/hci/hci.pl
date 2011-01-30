@@ -6,31 +6,67 @@
 %%%%                                                            %%%%
 :- module(hci,[]).
 
-%%%%
-%% Composition Algorithms
-%%%%
+%%%%               %%%%
+%% Graph Constraints %%
+%%%%               %%%%
 
-%% Example #2: parallel composition
+%% Semantics: a button node is always linked to an action node.
+% Implementation: precondition on an add_edge action
+:- constraints:register_predicate(pre,'actions:add_edge',hci:button_to_action).
+button_to_action(Frame, actions:add_edge(From, To, _)) :- 
+	queries:get_node_by_name(Frame, From, Node_from),
+	graph:read_properties(Node_from, kind, [button]) -> 
+	  ( queries:get_node_by_name(Frame, To, Node_to),
+	    graph:read_properties(Node_to, kind, [action]) )
+          ; true.
+
+%% Semantics: For all buttons, a connection with an action exists.
+% Implementation: a graph invariant
+:- constraints:register_invariant(hci:connected_buttons).
+connected_buttons(Frame) :- 
+	get_by_kind(Frame, button, Buttons), 
+	forall(member(B, Buttons),
+	       ( queries:get_edge_by_boundaries(Frame, B, A, _),
+	         queries:get_node_by_name(Frame, A, Act_node),
+	         graph:read_properties(Act_node, kind, [action]))).
+
+get_by_kind(Frame, Kind, Element_names) :- 
+	findall(N, (graph:has_for_node(Frame, X), 
+	            graph:read_properties(X, kind, [Kind]),
+		    graph:read_name(X, N)), Element_names).
+
+%%%%                    %%%%
+%% Composition Algorithms %%
+%%%%                    %%%%
+
+%%
+%%%% Example #2: parallel composition
+%%
+
 :- algorithm:declare(hci:parallel, [in(frame, graph), out(result)], 
 	             [[frame, result]]).
+
 parallel(Frame, Out) :- 
 	%% Find all the defined buttons
-	findall(I, ( graph:has_for_node(Frame, N), 
-	             graph:read_properties(N, kind, [button]),  
-		     graph:read_name(N,I)), Buttons),
+	get_by_kind(Frame, button, Tmp),
 	%% build the unified button ID
 	symbol:build(Frame, b, Symbol),
 	%% Ask for unification
-	Out = [actions:unify_node(Buttons,Symbol)].
+	Out = [actions:unify_node(Tmp,Symbol)].
 
-%% Example #3: field unification (name-based)
+
+
+%%
+%%%% Example #3: field unification (name-based)
+%%
+
 :- algorithm:declare(hci:unify_fields, [in(frame, graph), out(result)], 
 	             [[frame, result]]).
 unify_fields(Frame, Out) :- 
 	findall(C, hci:field_equivalence_class(Frame,C), Raw_classes),
 	sort(Raw_classes, Classes), %% remove duplicate equivalence classes
 	findall(actions:unify_node(Eq,Symb), 
-	        ( member(Eq,Classes), gensym(f,Symb)), Out).
+	        ( member(Eq,Classes), symbol:build(Frame, f,Symb) ), Out).
 
 field_equivalence_class(G, Equivalence_class) :- 
 	% Let N a node in G, tagged as a 'field', and named 'Name'
@@ -42,7 +78,9 @@ field_equivalence_class(G, Equivalence_class) :-
 	% Equivalence classes singleton are automatically rejected
 	length(L, Length), Length > 1, sort(L, Equivalence_class).
 
-%% Example #4: sequential composition
+%%
+%%%% Example #4: sequential composition
+%%
 :- algorithm:declare(hci:sequence, 
 	             [in(first, graph), in(second, graph), out(result)], 
 	             [[first, result]]).
@@ -57,7 +95,7 @@ sequence(First, Second, Out) :-
 	get_binding(First, Act_first, Output, Bind_out),
 	get_binding(Second, Input, Act_second, Bind_in),
 	% Retrieving the repudiated button
-	get_buttons(Second, [Button]),
+	get_by_kind(Second, button, [Button]),
 	% Creating the actions to be executed
 	Out=[ actions:del_edge(Act_first, Output,[]), actions:del_node(Output),
 	      actions:dump(Second),
@@ -86,15 +124,14 @@ get_binding(Frame, Source, Target, Binding_value) :-
 	queries:get_edge_by_boundaries(Frame, Source, Target, Edge),
 	graph:read_properties(Edge, binding, [Binding_value]).
 
-get_buttons(Frame, Buttons) :- 
-	findall(N, (graph:has_for_node(Frame, B), 
-	            graph:read_properties(B, kind, [button]),
-		    graph:read_name(B, N)), Buttons).
 
+%%%%                     %%%%
+%% Graphical Customization %%
+%%%%                     %%%%
 
-%%%%
-%% Graphical Customization
-%%%%
+%%
+%%%% Graph display implementation
+%%
 
 settings(L) :- 
         L = ['fontname = "Courier"', 'edge [fontname="Courier"]',
@@ -109,6 +146,9 @@ draw_node(_, Node, _, L) :-
 	graph:read_properties(Node, kind, [action]),
 	graph:read_properties(Node, target, [Target]),
 	L = [[label, Target], [shape, ellipse], [fillcolor, lightgrey]].
+draw_node(_, Node, _, [[shape, note], [label, Node_id]]) :- 
+	graph:read_properties(Node, kind, [button]),
+	graph:read_name(Node, Node_id).
 draw_node(_, Node, _, [[label, Label]]) :- 
 	\+ graph:read_properties(Node, kind, [action]),
 	graph:read_properties(Node, name, [Name]),
@@ -119,17 +159,28 @@ draw_edge(_, Edge, [[arrowhead, dot], [style, dashed]]) :-
 	graph:get_properties(Edge, []).
 draw_edge(_, Edge, [[label, Binding]]) :- 
 	graph:read_properties(Edge, binding,[Binding]).
+
+
 draw_edge(_, Edge, [[style, dashed], [label, Label]]) :- 
 	graph:read_properties(Edge, from, [From]),
 	graph:read_properties(Edge, to, [To]),
 	swritef(Label, '%w -> %w', [From, To]).
 
+raw(Frame, Code) :- 
+	get_by_kind(Frame, button, Buttons), 
+	findall(R, ( member(B, Buttons), 
+	             queries:get_edge_by_boundaries(Frame, B, A, _),
+		     swritef(R,'{rank="same"; %w; %w;}',[B,A])), Directives),
+	swrite_list(Directives, '\n', '\t', Code).
 
-%% Interface with the Emacs gCoKe Mode
+%%
+%%%% Interface with the Emacs gCoKe Mode
+%%
 
 custom(B) :- 
 	B = [[graph_config,hci:settings], [graph_handler,hci:graph_settings],
-	     [node_handler,hci:draw_node], [edge_handler,hci:draw_edge]].
+	     [node_handler,hci:draw_node], [edge_handler,hci:draw_edge], 
+	     [custom_code, hci:raw] ].
 
 show(F) :- custom(B), dot:show(F, B).
 
