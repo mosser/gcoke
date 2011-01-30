@@ -25,21 +25,21 @@
 %% Message Handling
 %%%%
 
-%% Should the engine be silent? (false by default)
+% Should the engine be silent? (false by default)
 :- dynamic gcoke_silence/1.
 gcoke_silence(false).
 
-%% set_gcoke_silence/1: set_gcoke_silence(+Value)
+%% set_gcoke_silence(+Value)
 % Assign Value (a boolean) to the gcoke silence level
 set_gcoke_silence(Value) :- 
 	retractall(gcoke_silence(_)), assert(gcoke_silence(Value)).
 
-%% gw/1 : gw(+Str)
+%% gw(+Str)
 % means gcoke_write. Write Str if gcoke_silence is set to false.
 gw(Str) :- 
 	gcoke_silence(false) -> (write(Str),nl); true.
 
-%% gwf/2: gwf(+Format, +Args)
+% gwf(+Format, +Args)
 % like gw/1, but use writef instead of write.
 gwf(Format, Args) :- 
 	gcoke_silence(false) -> writef(Format, Args) ; true.
@@ -48,19 +48,19 @@ gwf(Format, Args) :-
 %% Artefact load mechanisms
 %%%%
 
-%% load_pops/1: load_pops(+Path)
+%% load_pops(+Path)
 % Load Path, as a Plain Old Prolog Source (POPS) file.
 load_pops(Path) :-
 	set_prolog_flag(verbose_load, false),
 	gwf('%% Loading gCoKe source file  [%w] ...\n', [Path]), [Path].
 
-%% load_source/1: load_source(+Path)
+%% load_source(+Path)
 % load the gcoke module written in the file Path.
 load_module(Path) :- 
 	gwf('%% Loading gCoKe module file  [%w] ...\n', [Path]),
         use_module(Path).
 
-%% load_lib/1: load_lib(+Lib)
+%% load_lib(+Lib)
 % load a swi-pl third party library, avoiding autoload. 
 % /!\ Remark: use the 'check.' rule to identify autoloaded libraries
 load_lib(Lib) :- 
@@ -71,7 +71,7 @@ load_lib(Lib) :-
 %% Pretty printed header informations
 %%%%
 
-%% header/0: header
+%% header
 % Print header informations, according to adore_silence setting.
 header :- 
 	gw('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'),
@@ -90,23 +90,23 @@ header :-
 %% Concrete instantiation of the gCoke engine
 %%%%
 
-%% load_librairies/0: load_libraries
+%% load_libraries
 % load all the needed swi-pl libraries
 load_libraries :- 
 	load_lib(error), load_lib(lists), load_lib(debug), load_lib(gensym).
 
-%% load_core/0: load_core
+%%  load_core
 % load gCoke core, as modules or plain old prolog source code
 load_core :-  
 	load_pops(helpers), load_module(channels), load_pops(sniffs), 
 	load_module(graph), load_module(queries), load_module(path),
 	load_module(constraints), load_module(engine), load_module(errors),
 	load_module(actions), load_module(dot), load_module(trace), 
-	load_module(algorithm), load_module(composition), 
-	load_module(emacs_mode), true.
+	load_module(algorithm), load_module(common), load_module(composition),
+	load_module(symbol), load_module(emacs_mode), true.
     
 
-%% load_local_config/0: load_local_config
+%% load_local_config
 % load a local config file (~/.gcoke.pl), if exists.
 load_local_config :- 
 	getenv('HOME',Home), swritef(F,'%w/.gcoke.pl',[Home]), 
@@ -118,10 +118,11 @@ load_local_config :-
 %% Loading the complete gCoke engine
 %%%%
 
-%% load_gcoke/0: load_gcoke
+%% load_gcoke
 % Load the librairies, THEN the gcoke sources, and FINALLY the local config.
 load_gcoke :- 
 	set_prolog_flag(verbose_load, false),
 	header, load_libraries, load_core, load_local_config.
 
 :- load_gcoke.
+
