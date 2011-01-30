@@ -19,23 +19,21 @@
 %%
 %% @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
 %%%%
+
 :- module(errors,[]).
+/** <module> Error handling
 
+ - Exceptions are assumed as : error(Details, context(Artifact, Message).
+   - Details is an error-dependent term (see 'handle_details').
+   - Artifact is the faulty artifact (graph(Name)|composition(Name)).
+   - Message is a human-readable message (i.e., the "reason"). 
+  
+ - handle_details: by default, Detail term is simply printed, with few 
+      enhancement. One can define his/her own handling through the definition
+      of a new 'handle_details' predicate. This predicate must end with a cut.
+*/
 
-%%%%
-%% Error handling:
-%%
-%%   - Exceptions are assumed as : error(Details, context(Artifact, Message).
-%%    - Details is an error-dependent term (see 'handle_details').
-%%    - Artifact is the faulty artifact (graph(Name)|composition(Name)).
-%%    - Message is a human-readable message (i.e., the "reason"). 
-%%  
-%%  - handle_details: by default, Detail term is simply printed, with few 
-%%      enhancement. One can define his/her own handling through the definition
-%%      of a new 'handle_details' predicate. This predicate must end with a cut.
-%%%%
-
-%% catch_and_ignore/1: catch_and_ignore(+Goal). 
+%% catch_and_ignore(+Goal). 
 % Call Goal. If case of an exception catch, display the exception, but silently
 % succeed (so it does not impact other calls).
 % Remark: Mainly used by the gCoKe compiler (see compiled code).
@@ -44,10 +42,10 @@ catch_and_ignore(Goal) :-
 	       Exception, display_error(Exception)).
 
 throw_goal_failure_error(G) :- 
-	Error = error(gcoke_failure_error, context(G,'Goal Failure')),
+	Error = error(gcoke_internal_failure, context(goal(G),'Goal Failure')),
 	throw(Error).
 
-%% display_error/1: display_error(+Exception).
+%% display_error(+Exception).
 % Display Exception on stderr.
 display_error(error(Details_term, context(Artifact_term, Msg))) :- 
 	handle_details(Details_term, Details),
@@ -55,12 +53,13 @@ display_error(error(Details_term, context(Artifact_term, Msg))) :-
 	swritef(S, '\ngCoKe exception: %w\n  Artefact: %w\n  Details:\n%w\n', 
                 [Msg, Artifact, Details]), write(user_error,S).
 
-%% handle_artifact/2: handle_artifact(+Term, -String)
+%% handle_artifact(+Term, -String)
 % Transform an artifact Term into a String.
+handle_artifact(algo(Name), S) :- swritef(S,'algorithm %w',[Name]),!.
 handle_artifact(Term, String) :- 
 	Term =.. L, swrite_list(L,' ','',String).
 
-%% handle_details/2, handle_details(+Details, -String).
+%% handle_details(+Details, -String).
 % Transform the Details exception term into a human readable String.
 handle_details(gcoke_constraint_error(Constraint, Action_term), Result) :- 
 	Action_term =.. [Kind_code, Action],

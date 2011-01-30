@@ -21,13 +21,19 @@
 %%%%
 
 :- module(emacs_mode, [graph_show/1, graph_to_dot/2]).
+/** <module> Emacs mode binding
+
+This module binds Emacs shortcuts to user-given predicates
+*/
 
 :- dynamic gcoke_emacs_registered_predicate/2.
-
 
 %%%%
 %% Predicate registration
 %%%%
+
+%% register(+Label, +Predicate)
+% Store that Predicate is bound to Label.
 register(Label, Predicate) :- 
 	assert(gcoke_emacs_registered_predicate(Label, Predicate)).
 
@@ -35,15 +41,17 @@ register(Label, Predicate) :-
 %% Graphviz interaction: ->Graph and ->Dot transformations
 %%%%
 
-%% Display a given graph to the user screen.
+%% graph_show(+Graph_name) 
+% Display a given graph (named Graph_name) to the user screen.
 graph_show(Graph_name) :- 
 	\+ gcoke_emacs_registered_predicate(graph_show, _),
-	dot:show(Graph_name, []). %% default visualization
+	dot:show(Graph_name, []). % default visualization
 graph_show(Graph_name) :- 
 	gcoke_emacs_registered_predicate(graph_show, Pred), !,
-	call(Pred, Graph_name).   %% custom visualization
+	call(Pred, Graph_name).   % custom visualization
 
-%% Transform a given graph into dot code, sotred in a given file.
+%% graph_to_dot(+Graph_name, +Dot_file) 
+% Transform a given graph (Graph_name) into dot code, stored in a Dot_file.
 graph_to_dot(Graph_name, Dot_file) :- 
 	\+ gcoke_emacs_registered_predicate(graph_to_dot, _),
 	dot:write_dot_source(Graph_name, [], Dot_file).

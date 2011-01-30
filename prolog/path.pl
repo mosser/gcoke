@@ -21,19 +21,23 @@
 %%%%
 
 :- module(path,[]).
+/** <module> Path finding algorithms
+
+This module implements several path finding algorithms.
+
+*/
 
 %%%%
 %% Path existence
 %%%%
-% Warning: exists/3 is more efficient than exists/4.
 
-%% exists/3: exists(+Graph, +Start, +End)
+%% exists(+Graph, +Start, +End)
 % Evaluated as true if a path exists between a node named Start and a node 
 % named End in Graph. Cyclic graphs are handled (see exists_internal).
 exists(Graph, Start_name, End_name) :- 	
 	exists_internal(Graph, Start_name, End_name, [Start_name]).
 
-%% exists_internal/4: exists_internal(+G, +Start, +End, +Visited)
+%% exists_internal(+G, +Start, +End, +Visited)
 % Evaluated as true if a path exists between a node named Start and a node 
 % named End in Graph (nodes are visited only once).
 exists_internal(Graph, Start, End, _) :- 
@@ -44,14 +48,14 @@ exists_internal(Graph, Start, End, Visited) :-
 	Path = [Intermediate | Visited],
 	path:exists_internal(Graph, Intermediate, End, Path).
 
-%% exists/4: exists(+Graph, +Start, +End, +Key_values)
+%% exists(+Graph, +Start, +End, +Key_values)
 % Same as exists/3, but restricted to a given Key_values list expected in the 
-% choosen path. 
+% choosen path. Warning: exists/3 is more efficient than exists/4.
 exists(Graph, Start_name, End_name, Key_values_list) :- 	
 	exists_internal(Graph, Start_name, End_name, 
 	                Key_values_list, [Start_name]).
 
-%% exists_internal/5: exists_internal(+G, +Start, +End, +Key_values, +Visited)
+%% exists_internal(+G, +Start, +End, +Key_values, +Visited)
 % same as exists_internal/4, but restricted to expected props (described as 
 % Key_values list) in the edges.
 exists_internal(Graph, Start, End, Props ,_) :- 

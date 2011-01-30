@@ -19,27 +19,23 @@
 %%
 %% @author   Main    Sebastien Mosser  [ sm@gcoke.org ]
 %%%%
+:- module(helpers, [ gcoke_functor/3, gcoke_term_to_list/2, id_assert/1, 
+	             write_list/3, swrite_list/4, getenv_or_default/3]).
+/** <module> Helpers predicate
+*/
 
-%%%%
-%% /!\ Warning: MUST be loaded in the 'user' module (plain old prolog source).
-%%%%
-
-%% Rationale:
-%  this file contains helper code, used by others files.
-%%
-
-%% gcoke_functor/3: gcoke_functor(+Term, ?Head, ?Arity)
+%% gcoke_functor(+Term, ?Head, ?Arity) 
 % Redefinition of the 'functor' predicate, to properly handle modules.
 gcoke_functor(Term, Head, Arity) :- 
-	strip_module(Term,user,Term), !, %% not a module term => raw pred.
-	functor(Term,Head,Arity).
+ 	strip_module(Term,user,Term), !, % not a module term, raw pred.
+ 	functor(Term,Head,Arity).
 gcoke_functor(Term, Head, Arity) :-
 	strip_module(Term, Module, Real_term),
 	functor(Real_term,Raw_head, Arity),
 	swritef(Final_head,'%w:%w',[Module,Raw_head]),
         string_to_atom(Final_head,Head).
 
-%% gcoke_term_to_list/2: gcoke_term_to_list(+Term, -List)
+%% gcoke_term_to_list(+Term, -List)
 % Redefinition of the '=..' predicate to properly handle modules (not bidir).
 gcoke_term_to_list(Term, List) :- 
 	strip_module(Term,user,Term), !, Term =.. List.
@@ -49,18 +45,18 @@ gcoke_term_to_list(Term, [Head|Other_terms]) :-
 	swritef(Final_head,'%w:%w',[Module,Raw_head]),
         string_to_atom(Final_head,Head).	
 
-%% id_assert/1: id_assert(+Fact)
+%% id_assert(+Fact)
 % Realize an idempotent assertion (existing fact will not be re-asserted)
 % also works on dynamic predicate (which do not pre-exists)
-% TODO: generates weird behavior for 'module:term' unification. FIX?
+% generates weird behavior for 'module:term' unification. FIX?
 id_assert(Fact) :- catch(Fact,error(existence_error(_,_),_),fail),!.
 id_assert(Fact) :- assert(Fact).
 
-%% write_list/2: write_list(+List, +Separator,+Pre)
+%% write_list(+List, +Separator,+Pre)
 % Write each element of List, separated by Separator and preceded by Pre.
 write_list(List, Pre, Sep) :- swrite_list(List, Sep, Pre, R), write(R).
 
-%% swrite_list/2: swrite_list(+List, +Separator, +Pre, -Result)
+%% swrite_list(+List, +Separator, +Pre, -Result)
 % Unify Result with a string containing all elements of List, preceded by Pre 
 % and separated by Separator.
 swrite_list([],_,_,'').
@@ -69,8 +65,8 @@ swrite_list([H|T],Sep,Pre,Res) :-
 	swrite_list(T,Sep,Pre,Others), 
 	swritef(Res,'%w%w%w%w',[Pre,H,Sep,Others]).
 
-%% getenv_or_default/3: getenv_or_default(+Env_var_name, +Default, -Value)
+%% getenv_or_default(+Env_var_name, +Default, -Value)
 % unify Value with the value of Env_var_name, if defined. If not, Value is
 % unified with Default.
 getenv_or_default(Env_var_name, Default, Value) :- 
-	getenv(Env_var_name,Value) -> true; Value = Default.
+ 	getenv(Env_var_name, Value) -> true; Value = Default.
