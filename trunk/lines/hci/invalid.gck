@@ -1,0 +1,24 @@
+/** HCI composition (bad) examples
+ * @author Sebastien Mosser, based on Christian Brel's examples.
+ **/
+
+sniff hci;
+
+// Action precondition violation
+graph precondition [kind='frame'] {
+  b1 [kind='button']; 
+  i1 [kind='field', name='a_field']; 
+  b1 -> i1;
+}
+
+// Graph invariant violation
+graph invariant [kind='frame'] {
+  in [kind='field', name='data']; 
+  out  [kind='label', name='data\'']; 
+  b1  [kind='button']; b2 [kind='button'];
+  act  [kind='action', target='trim'];
+  in -> act [binding='x']; 
+  act -> out [binding='x\''];
+}
+
+require 'samples.gck';
