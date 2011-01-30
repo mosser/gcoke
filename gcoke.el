@@ -110,6 +110,7 @@
 (define-key gcoke-map (kbd "C-c C-k") 'gcoke-kill-engine)
 (define-key gcoke-map (kbd "C-c C-p") 'gcoke-display-current-element)
 (define-key gcoke-map (kbd "C-c C-o") 'gcoke-open-required)
+(define-key gcoke-map (kbd "C-c p") 'gcoke-display-graph-as-png)
 
 ;; Menu bar definition
 (let ((menuMap (make-sparse-keymap "gCoKe menu Keymap")))
@@ -162,7 +163,7 @@
   
   ;; Syntax highlighing
   (defvar source-keywords 
-    (regexp-opt '("require" "require_raw" "sniff") 'words))
+    (regexp-opt '("require" "require_raw" "sniff" "trigger") 'words))
   (defvar element-keywords 
     (regexp-opt '("graph" "composition") 'words))
   (defvar composition-regexp "[a-z][a-zA-Z0-9_]*[:blank:]*:")
