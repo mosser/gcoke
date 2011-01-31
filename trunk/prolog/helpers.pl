@@ -31,9 +31,7 @@ gcoke_functor(Term, Head, Arity) :-
  	functor(Term,Head,Arity).
 gcoke_functor(Term, Head, Arity) :-
 	strip_module(Term, Module, Real_term),
-	functor(Real_term,Raw_head, Arity),
-	swritef(Final_head,'%w:%w',[Module,Raw_head]),
-        string_to_atom(Final_head,Head).
+	functor(Real_term,Raw_head, Arity), Head = Module:Raw_head.
 
 %% gcoke_term_to_list(+Term, -List)
 % Redefinition of the '=..' predicate to properly handle modules (not bidir).

@@ -12,7 +12,7 @@
 
 %% Semantics: a button node is always linked to an action node.
 % Implementation: precondition on an add_edge action
-:- constraints:register_predicate(pre,'actions:add_edge',hci:button_to_action).
+:- constraints:register_predicate(pre,actions:add_edge,hci:button_to_action).
 button_to_action(Frame, actions:add_edge(From, To, _)) :- 
 	queries:get_node_by_name(Frame, From, Node_from),
 	graph:read_properties(Node_from, kind, [button]) -> 

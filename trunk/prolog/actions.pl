@@ -34,17 +34,6 @@ executed on-the-fly).
 The execution engine (see engine.pl) will automatically fill the 
 execution-dependent parameters, that is, the last two parameters. For each 
 action, a code snippets describes how to use it with the gCoKe engine. 
-
-  * Atomic actions: 
-    * add_node/4
-    * add_edge/5
-    * add_property/4
-    * del_node/3
-    * del_edge/5
-  * Composite actions:
-    * replace_node/4
-    * unify_nodes/4
-    * dump/1
 */
 
 %%%%
@@ -64,7 +53,7 @@ add_node(Node_name, Key_value_list, Graph, Result) :-
 	graph:build_property_list(Key_value_list, Prop_list),
 	graph:push_property_list(Empty_node, Prop_list, Node),
 	graph:push_node(Graph, Node, Result).
-:- Action = 'actions:add_node',
+:- Action = actions:add_node,
    constraints:register_predicate(pre, Action, actions:non_existing_node).
 
 %% add_edge(+Source_node, +Target_node, +Key_value_list, +Graph, -Result)
@@ -80,7 +69,7 @@ add_edge(Source_node, Target_node, Key_value_list, Graph, Result) :-
 	graph:build_property_list(Key_value_list, Prop_list),
 	graph:push_property_list(Empty_edge, Prop_list, Edge),
 	graph:push_edge(Graph, Edge, Result).
-:- Action = 'actions:add_edge',
+:- Action = actions:add_edge,
    constraints:register_predicate(pre, Action, actions:existing_boundaries).
 
 %% add_property(+Key, +Value, +Graph, -Result)
@@ -91,7 +80,7 @@ add_edge(Source_node, Target_node, Key_value_list, Graph, Result) :-
 % ==
 add_property(Key, Value, Graph, Result) :- 
 	(graph:read_properties(Graph, Key, [Value]) 
-        -> Result = Graph %% Idempotency
+        -> Result = Graph % Idempotency
 	;  graph:build_property(Key, Value, Prop), 
 	   graph:push_property(Graph, Prop, Result)).
 	
@@ -109,7 +98,7 @@ add_property(Key, Value, Graph, Result) :-
 del_node(Node_name, Graph, Result) :- 
 	queries:get_node_by_name(Graph, Node_name, Node), 
 	graph:pull_node(Graph, Node, Result).
-:- Action = 'actions:del_node',
+:- Action = actions:del_node,
    constraints:register_predicate(pre, Action, actions:existing_node), 
    constraints:register_predicate(pre, Action, actions:unused_node).	
 
@@ -126,7 +115,7 @@ del_edge(Source_name, Target_name, Key_value_list, Graph, Result) :-
 	queries:get_edge_by_properties(Graph, Key_value_list, Source_name, 
 	                             Target_name, Edge), !, %% => is det.
 	graph:pull_edge(Graph, Edge, Result).
-:- Action = 'actions:del_edge',
+:- Action = actions:del_edge,
    constraints:register_predicate(pre, Action, actions:unique_selection).
 
 %%%%
@@ -156,8 +145,8 @@ replace_node(Old_name, New_name, Graph, Action_list) :-
 		Successors),
 	flatten([Predecessors, Successors, actions:del_node(Old_name)], 
 	         Action_list).
-:- Action = 'actions:replace_node', engine:register_as_composite(Action),
-  constraints:register_predicate(pre,Action, actions:existing_nodes).
+:- Action = actions:replace_node, engine:register_as_composite(Action),
+  constraints:register_predicate(pre, Action, actions:existing_nodes).
 
 %%%%	
 %% Composite Action: unify
@@ -182,7 +171,7 @@ unify_node(Node_name_list, New_name, Graph, Action_list) :-
 	findall(actions:replace_node(N,New_name), member(N, Node_name_list), 
 	        Replace_list),
 	Action_list = [actions:add_node(New_name, Key_val_list)|Replace_list].
-:- Action = 'actions:unify_node', engine:register_as_composite(Action),
+:- Action = actions:unify_node, engine:register_as_composite(Action),
   constraints:register_predicate(pre, Action, actions:non_existing_node).
 
 %%%%
@@ -214,12 +203,13 @@ dump(Graph,_, Action_list) :-
  		  graph:build_key_value_list(Edge_props, L) ), Edge_acts),
 	%% Final Result
 	flatten([Prop_acts, Node_acts, Edge_acts], Action_list).
-:- Action = 'actions:dump', engine:register_as_composite(Action).
+:- Action = actions:dump, engine:register_as_composite(Action).
+
+
 
 %%%%
 %% Constraints associated to these actions, part of the gCoKe kernel
 %%%%
-
 
 %% non_existing_node(+Graph, +Action)
 % Fail if Action asks to add a node still existing in Graph

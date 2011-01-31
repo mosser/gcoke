@@ -46,16 +46,14 @@ Remarks:
 %% register_predicate(+Kind, +Action, +Predicate)
 % register a Predicate for pre/post (Kind) condition checking associated to
 % the given Action (head of the action term).
-register_predicate(Kind,Action,Predicate) :- 
-	string_to_atom(Str,Action),
-	assert(gcoke_registered_pred(Kind,Str,Predicate)).
+register_predicate(Kind, Action, Predicate) :- 
+	assert(gcoke_registered_pred(Kind, Action, Predicate)).
 
 %% get_predicates(+Kind, +Action, -Predicates)
 % unify Predicates with a list of predicated associated as pre/post (Kind)
 % conditions for Action
-get_predicates(Kind,Action,Predicates) :- 
-	string_to_atom(Str,Action),
-	findall(P,gcoke_registered_pred(Kind,Str,P),Predicates).
+get_predicates(Kind, Action, Predicates) :- 
+	findall(P, gcoke_registered_pred(Kind, Action, P), Predicates).
 
 %% check_conditions(+Kind, +Action, +Graph)
 % Perform pre/post (Kind) condition checking associated to Action in Graph
