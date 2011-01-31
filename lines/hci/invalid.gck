@@ -15,10 +15,9 @@ graph precondition [kind='frame'] {
 graph invariant [kind='frame'] {
   in [kind='field', name='data']; 
   out  [kind='label', name='data\'']; 
-  b1  [kind='button']; b2 [kind='button'];
-  act  [kind='action', target='trim'];
+  b1  [kind='button'];  act  [kind='action', target='trim'];
   in -> act [binding='x']; 
   act -> out [binding='x\''];
 }
 
-require 'samples.gck';
+//require 'samples.gck';
