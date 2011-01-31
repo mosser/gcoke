@@ -40,8 +40,7 @@ gcoke_term_to_list(Term, List) :-
 gcoke_term_to_list(Term, [Head|Other_terms]) :- 
 	strip_module(Term, Module, Real_term),
 	Real_term =.. [Raw_head|Other_terms],
-	swritef(Final_head,'%w:%w',[Module,Raw_head]),
-        string_to_atom(Final_head,Head).	
+	Head = Module:Raw_head.
 
 %% id_assert(+Fact)
 % Realize an idempotent assertion (existing fact will not be re-asserted)
