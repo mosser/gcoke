@@ -1,0 +1,26 @@
+sniff ase_xp;
+
+graph m { 
+  c1 [kind='class']; 
+  c2 [kind='class']; 
+}
+
+composition apply(m) [mde] {
+  s(model: m) => (output: m_s);
+  a(model: m) => (output: m_a);
+} => (m_s, m_a);
+trigger apply;
+
+composition ordered(m) [mde] {
+  s(model: m)   => (output: m_s);
+  a(model: m_s) => (output: m_as);
+  a(model: m)   => (output: m_a);
+  s(model: m_a) => (output: m_sa);
+} => (m_sa, m_as);
+trigger ordered;
+
+composition parallel(m) [mde] {
+  s(model: m) => (output: m_prime);
+  a(model: m) => (output: m_prime);
+} => (m_prime);
+trigger parallel;
