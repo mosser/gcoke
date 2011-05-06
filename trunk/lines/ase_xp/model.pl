@@ -21,7 +21,7 @@
 %%%%
 :- module(mde,[]).
 
-%% Illustrative example associated to ASE'11 paper
+%% Illustrative example associated to ASE 11 paper
 
 %%%%
 %% Adaptations
