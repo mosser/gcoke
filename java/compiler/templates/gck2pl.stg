@@ -93,7 +93,8 @@ build_compiled_composition(<name>, Composition) :-
                          Empty),
   Directives = <directives>,
   composition:push_directive_set(Empty, Directives, Composition),!.
-:- errors:catch_and_ignore((build_compiled_composition(<name>, C), composition:push_into_db(C))).
+:- errors:catch_and_ignore((build_compiled_composition(<name>, C), 
+                            composition:push_into_db(C))).
 >>
 
 graph_lst(graphs) 	::= "<graphs; separator=\", \">"
@@ -113,7 +114,8 @@ algo_graph_set(set) 	::= "graph_set([<set; separator=\", \">])"
 // halding composition triggering
 trigger(composition_name) ::= <<
 %% Triggering composition <composition_name>
-:- errors:catch_and_ignore((build_compiled_composition(<composition_name>, C), composition:play(C))).
+:- errors:catch_and_ignore((build_compiled_composition(<composition_name>, C), 
+                            composition:play(C))).
 >>
 
 
