@@ -67,7 +67,8 @@ build_compiled_graph(<id>, Graph, Counter) :-
 
 // handling graph properties
 graph_prop_lst(props) 	::= "<props; separator=\",\n                \">"
-graph_prop(key, value) 	::= "actions:add_property(<key>,<value>)"
+graph_prop_set(key, values) ::= 
+	"actions:add_property(<key>,[<values; separator=\",\">])"
 
 //handling node
 node_lst(nodes) 	::= "<nodes; separator=\",\n                \">"
@@ -80,8 +81,7 @@ edge(left, right, props) ::=
 
 // handling properties for nodes and edges
 prop_lst(props) 	::= "<props; separator=\", \">"
-prop(key, value) 	::= "[<key>, <value>]"
-
+prop_set(key, values) 	::= "[<key>, [<values; separator=\",\">]]"
 
 // handling compositions
 composition(name, inputs, outputs, directives) ::= <<

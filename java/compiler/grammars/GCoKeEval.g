@@ -85,7 +85,9 @@ graph_prop_lst
 		-> 	graph_prop_lst(props={$props});
 graph_prop	
 	:	^(PROP key=ID value=STRING)
-		-> 	graph_prop(key={$key.text}, value={$value.text}); 
+		-> 	graph_prop(key={$key.text}, value={$value.text})
+	|	^(PROP key=ID ^(VAL_LST values+=STRING+))
+		->	graph_prop_set(key={$key.text}, values={$values});
 // nodes handling (graph internal)
 node_lst:	^(NODE_LST nodes+=node+) -> node_lst(nodes={$nodes});
 node	:	^(NODE id=ID props=prop_lst?)
@@ -103,5 +105,7 @@ edge	:	^(EDGE left=ID right=ID props=prop_lst?)
 prop_lst:	^(PROP_LST props+=prop+)
 		-> 	prop_lst(props={$props});
 prop	:	^(PROP key=ID value=STRING)
-		-> 	prop(key={$key.text}, value={$value.text});
+		-> 	prop(key={$key.text}, value={$value.text})
+	| 	^(PROP key=ID ^(VAL_LST values+=STRING+))
+		->	prop_set(key={$key.text}, values={$values});
 		
