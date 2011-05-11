@@ -62,7 +62,8 @@ build_compiled_graph(<id>, Graph, Counter) :-
   Edges_Acts = [<edges>],
   flatten([Props_Acts, Nodes_Acts, Edges_Acts], Actions),
   engine:do_sequence(Empty, Actions, Graph, Counter),!.
-:- errors:catch_and_ignore((build_compiled_graph(<id>, G, _), graph:push_into_db(G))).
+:- errors:catch_and_ignore((build_compiled_graph(<id>, G, _), 
+                            graph:push_into_db(G))).
 >>
 
 // handling graph properties
