@@ -32,6 +32,7 @@ tokens {
   EDGE; EDGE_LST; NODE; NODE_LST; PROP; PROP_LST;
   COMPO_INPUTS; COMPO_OUTPUTS; COMPO_DIR_LST; COMPO_DIR; 
   ALGO_INPUTS; ALGO_OUTPUTS; ALGO_BIND; ALGO_GRAPH; ALGO_TERM; ALGO_GRAPH_SET;
+  VAL_LST;
 }
 
 /* Lexer-specific code */
@@ -75,7 +76,9 @@ trigger :	'trigger' composition=ID ';'	-> ^(TRIGGER $composition);
 graph	:	'graph' id=ID props=prop_lst? '{' nodes=node_lst edges=edge_lst? '}' 
 						-> ^(GRAPH $id $nodes $edges? $props?);
 prop_lst:	'[' prop (',' prop)* ']'	-> ^(PROP_LST prop+);
-prop	:	key=ID '=' value=STRING 	-> ^(PROP $key $value);
+prop	:	key=ID '=' value=STRING 	-> ^(PROP $key ^(VAL_LST $value))
+	|	key=ID'=' '{' STRING (',' STRING)* '}' 
+						-> ^(PROP $key ^(VAL_LST STRING+));
 
 node_lst:	node+ 				-> ^(NODE_LST node+);
 node	:	id=ID props=prop_lst? ';' 	-> ^(NODE $id $props?);
