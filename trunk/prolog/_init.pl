@@ -52,12 +52,13 @@ gwf(Format, Args) :-
 % Load Path, as a Plain Old Prolog Source (POPS) file.
 load_pops(Path) :-
 	set_prolog_flag(verbose_load, false),
-	gwf('%% Loading gCoKe source file  [%w] ...\n', [Path]), [Path].
+	%gwf('%% Loading gCoKe source file  [%w] ...\n', [Path]), 
+	[Path].
 
 %% load_source(+Path)
 % load the gcoke module written in the file Path.
 load_module(Path) :- 
-	gwf('%% Loading gCoKe module file  [%w] ...\n', [Path]),
+	%gwf('%% Loading gCoKe module file  [%w] ...\n', [Path]),
         use_module(Path).
 
 %% load_lib(+Lib)

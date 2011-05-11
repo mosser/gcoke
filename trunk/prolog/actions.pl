@@ -185,23 +185,23 @@ unify_node(Node_name_list, New_name, Graph, Action_list) :-
 %   dump(gcoke_graph(...))
 % ==
 dump(Graph,_, Action_list) :- 
-	%% Properties
+	% Properties
 	graph:get_properties(Graph, Props), 
 	graph:build_key_value_list(Props, Prop_lst), 
 	findall(actions:add_property(K,V), member([K,V],Prop_lst), Prop_acts),
-	%% Nodes
+	% Nodes
 	graph:get_nodes(Graph, Nodes), 
 	findall(actions:add_node(Id,L), 
 	        ( member(N,Nodes), graph:read_name(N,Id), 
 		  graph:get_properties(N, Node_props), 
 		  graph:build_key_value_list(Node_props, L) ), Node_acts),
-	%% Edges
+	% Edges
 	graph:get_edges(Graph, Edges), 
  	findall(actions:add_edge(From,To,L), 
  	        ( member(E,Edges), graph:read_edge_boundaries(E,From,To), 
  		  graph:get_properties(E, Edge_props), 
  		  graph:build_key_value_list(Edge_props, L) ), Edge_acts),
-	%% Final Result
+	% Final Result
 	flatten([Prop_acts, Node_acts, Edge_acts], Action_list).
 :- Action = actions:dump, engine:register_as_composite(Action).
 
